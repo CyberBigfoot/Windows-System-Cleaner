@@ -1,159 +1,96 @@
-# Windows System Cleaner
+# EAWTECH-Tool (Windows System Cleaner)
 
-A comprehensive GUI application for Windows system maintenance and optimization. This tool provides an easy-to-use interface for performing various system cleaning, maintenance, and reporting tasks.
+A comprehensive GUI application for Windows system maintenance, optimization, and advanced drive analysis. This tool provides an easy-to-use interface for performing various system cleaning, maintenance, reporting tasks, and health monitoring.
 
 ## Features
 
-- **Core System Tasks**
-  - Clean temporary files from system directories
-  - Run Windows Disk Cleanup with all options
-  - Disable Windows Fast Startup
-  - Repair system files using SFC and DISM
-  - Schedule CHKDSK to run on next reboot
+### 🔍 StorageSense & Drive Health (NEW)
+-   **Advanced Disk Visualization**: Interactive directory tree and file list with size visualization.
+-   **Drive Health Monitoring**: Real-time S.M.A.R.T. data analysis including:
+    -   Health Status (Healthy/Warning/Critical)
+    -   Temperature & Wearout levels
+    -   Power On Hours & Cycle counts
+    -   Read/Write Error rates
+    -   Performance stats (IOPS, Latency)
+-   **Large File Finder**: Color-coded highlights for large files to easily identify space hogs.
+-   **File Type Hints**: Smart descriptions for known file types (e.g., "safe to delete" hints for temp files).
+-   **Integrated Management**: Open file locations or delete files directly from the analyzer.
 
-- **System Updates & Maintenance**
-  - Check and install Windows updates
-  - Update installed applications using Windows Package Manager (winget)
-  - Check and install device firmware updates (Dell, HP, Lenovo)
+### 🛠️ Core System Tasks
+-   **Clean Temporary Files**: Removes temporary files from system directories to free up space.
+-   **Deep Disk Cleanup**: Automates Windows Disk Cleanup with comprehensive options.
+-   **Disable Fast Startup**: Disables Fast Startup to ensure complete system shutdowns (fixes many uptime issues).
+-   **Repair System**: Runs standard Windows repairs (`sfc /scannow` and DISM).
+-   **Schedule CHKDSK**: Schedules a disk check for the next reboot.
 
-- **Network & Connectivity**
-  - Flush DNS and renew IP address
-  - Display detailed IP configuration
-  - Change DNS servers to 1.1.1.1 and 8.8.8.8
+### 🚀 System Optimization & Maintenance
+-   **Performance Adjustments**: Applies tweaks for better performance (disables transparency, game bar, etc.).
+-   **Stop Background Apps**: Prevents unnecessary apps from running in the background.
+-   **Disable Startup Apps**: Optimizes boot time by disabling non-essential startup programs (excludes OneDrive).
+-   **Update Installed Apps**: Update specific or all installed applications using `winget`.
+-   **Windows Updates**: Checks for and installs available Windows system updates.
+-   **Firmware Updates**: Automatically checks for Dell, HP, or Lenovo firmware updates.
 
-- **System Optimization**
-  - Windows performance adjustments (disable Focus Assist, transparency effects, Game Bar)
-  - Stop background applications
-  - Disable startup applications (except OneDrive)
+### 🌐 Network & Connectivity
+-   **Flush DNS & Renew IP**: Clears DNS cache and requests a new IP address.
+-   **Detailed Network Config**: Displays comprehensive IP and network adapter information.
+-   **Fast DNS Switcher**: One-click switch to high-performance DNS providers (Cloudflare 1.1.1.1 / Google 8.8.8.8).
 
-- **Reporting & Utilities**
-  - Generate comprehensive PC system report (similar to Belarc Advisor)
-  - Create AutoPilot CSV for Windows deployment
-  - Run Chris Titus Windows Utility
+### 📊 Reporting & Utilities
+-   **PC System Report**: Generates a detailed HTML report of your system hardware and software (similar to Belarc).
+-   **AutoPilot CSV**: Exports hardware hash for Windows AutoPilot deployment.
+-   **Chris Titus Utility**: Integrated launcher for the popular Chris Titus Tech Windows Utility.
 
 ## Installation
 
 ### Prerequisites
-
-- Windows 7/8/10/11 (64-bit)
-- Python 3.8 or higher
-- Administrator privileges (required for most features)
+-   **OS**: Windows 10/11 (64-bit) recommended.
+-   **Python**: Version 3.8 or higher.
+-   **Privileges**: Administrator rights are required for most operations.
 
 ### Dependencies
-
 Install the required Python packages:
-
 ```bash
-pip install wmi requests beautifulsoup4 psutil
+pip install wmi requests beautifulsoup4 psutil customtkinter
 ```
 
 ### Running the Application
-
-1. Download the `system_cleaner.py` file
-2. Open Command Prompt or PowerShell as Administrator
-3. Navigate to the directory containing the file
-4. Run the application:
-
-```bash
-python system_cleaner.py
-```
+1.  Open Command Prompt or PowerShell as **Administrator**.
+2.  Navigate to the application directory.
+3.  Run the main script:
+    ```bash
+    python main.py
+    ```
 
 ## Usage
 
-### GUI Interface
+### The Interface
+The application is divided into logical sections:
+-   **Left Column (Core & Apps)**: Essential cleaning tasks and application management.
+-   **Right Column (Additional Tasks)**: Network tools, reporting, and the **StorageSense** launcher.
+-   **Bottom**: Real-time activity log showing operation status and results.
 
-The application provides a user-friendly graphical interface with the following sections:
-
-1. **Core System Tasks** (left column)
-   - Select tasks by checking the boxes
-   - Tasks requiring admin privileges are marked with "A"
-   - Tasks available to standard users are marked with "U"
-
-2. **App Settings** (left column)
-   - Configure application-related settings
-   - Stop background apps
-   - Disable startup apps
-   - Update installed apps
-
-3. **Additional System Tasks** (right column)
-   - Advanced system maintenance options
-   - Network configuration tools
-   - Reporting utilities
-
-4. **Activity Log**
-   - Real-time logging of all operations
-   - Timestamped entries for each action
+### Using StorageSense
+1.  Check the **"StorageSence (Drive Scanner)"** box in the "Additional Tasks" section.
+2.  Click **"Run Selected Tasks"**.
+3.  A new window will open. Click **"Select Drive"** to choose a target.
+4.  Click **"Start Scan"** to begin analyzing.
+5.  Click **"Drive Health"** at the bottom to view detailed S.M.A.R.T. statistics.
 
 ### Command Line Options
-
-You can also run specific tasks directly from the command line:
-
+You can also run specific tasks directly via CLI arguments:
 ```bash
-python system_cleaner.py --clean-temp 1 --disk-cleanup 1 --disable-fast-startup 1
+python main.py --clean-temp 1 --disk-cleanup 1
 ```
+Use `python main.py --help` to see all available command-line flags.
 
-Available options:
-- `--clean-temp` (0/1): Clean temporary files
-- `--disk-cleanup` (0/1): Run disk cleanup
-- `--disable-fast-startup` (0/1): Disable fast startup
-- `--update-apps` (0/1): Update installed apps
-- `--windows-updates` (0/1): Install Windows updates
-- `--device-firmware` (0/1): Update device firmware
-- `--repair-system` (0/1): Repair system files
-- `--chk-dsk` (0/1): Schedule CHKDSK
-- `--windows-adjustments` (0/1): Apply Windows adjustments
-- `--flush-dns` (0/1): Flush DNS and renew IP
-- `--ipconfig-all` (0/1): Display IP configuration
-- `--change-dns` (0/1): Change DNS servers
-- `--autopilot-csv` (0/1): Create AutoPilot CSV
-- `--pc-report` (0/1): Generate PC report
-- `--chris-titus-utility` (0/1): Run Chris Titus Utility
-- `--stop-background-apps` (0/1): Stop background apps
-- `--disable-startup-apps` (0/1): Disable startup apps
-
-### Customization
-
-- **Theme Toggle**: Switch between light and dark themes using the View menu
-- **Font Size**: Adjust font size (Small, Medium, Large, Extra Large) via the Change Font Size menu
-
-## Security Considerations
-
-This application performs system-level operations and requires administrator privileges for most features. The following security measures have been implemented:
-
-1. **Path Sanitization**: All file paths are sanitized to prevent path traversal attacks
-2. **Command Argument Sanitization**: Command line arguments are sanitized to prevent injection attacks
-3. **Registry Validation**: Registry key paths are validated against allowed patterns
-4. **Secure Execution**: PowerShell commands are executed with limited privileges where possible
-5. **Error Handling**: Comprehensive error handling prevents information leakage
-
-**Important**: Only run this application if you trust the source and understand the operations being performed. Always review the changes before applying them to your system.
-
-## Troubleshooting
-
-### Administrator Privileges
-
-Most features require administrator privileges. If you encounter permission errors:
-
-1. Right-click on Command Prompt or PowerShell
-2. Select "Run as administrator"
-3. Navigate to the application directory
-4. Run the application again
-
-### Common Issues
-
-- **Windows Updates**: Some updates may require a system reboot to complete
-- **CHKDSK**: This operation will run on the next system reboot and may take a long time
-- **Firmware Updates**: Manufacturer-specific utilities may need to be installed separately
-- **PC Report Generation**: This process may take several minutes to complete
+## Security & Safety
+-   **Admin Required**: Most features modify system settings and require elevated permissions.
+-   **Safe Defaults**: Destructive actions (like file deletion) require user confirmation.
+-   **Sanitization**: Input paths and commands are sanitized to prevent execution errors.
 
 ## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+This project is licensed under the MIT License.
 
 ## Disclaimer
-
-This software is provided "as is" without warranty of any kind. Use at your own risk. The authors are not responsible for any damage to your system that may result from using this software. Always back up your important data before performing system maintenance operations.
+This software provides powerful system tools. **Always backup important data** before running system repairs or large-scale file deletions. Use at your own risk.

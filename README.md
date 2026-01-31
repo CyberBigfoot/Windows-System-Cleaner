@@ -1,4 +1,4 @@
-# EAWTECH-Tool (Windows System Cleaner)
+# Windows System Cleaner
 
 A comprehensive GUI application for Windows system maintenance, optimization, and advanced drive analysis. This tool provides an easy-to-use interface for performing various system cleaning, maintenance, reporting tasks, and health monitoring.
 

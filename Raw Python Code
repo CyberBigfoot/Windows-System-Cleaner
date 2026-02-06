@@ -27,6 +27,411 @@ import hashlib  # Added missing import
 import shutil
 import math
 import customtkinter as ctk
+# ==================== INSTALLABLE APPS DATABASE ====================
+INSTALLABLE_APPS = {
+    # ==================== BROWSERS ====================
+    "Brave": {"winget": "Brave.Brave", "category": "Browsers", "description": "Privacy-focused web browser"},
+    "Chrome": {"winget": "Google.Chrome", "category": "Browsers", "description": "Google's web browser"},
+    "Chromium": {"winget": "Hibbiki.Chromium", "category": "Browsers", "description": "Open-source browser foundation"},
+    "Edge": {"winget": "Microsoft.Edge", "category": "Browsers", "description": "Microsoft's modern browser"},
+    "Firefox": {"winget": "Mozilla.Firefox", "category": "Browsers", "description": "Mozilla's privacy-focused browser"},
+    "Firefox ESR": {"winget": "Mozilla.Firefox.ESR", "category": "Browsers", "description": "Extended Support Release"},
+    "Floorp": {"winget": "Ablaze.Floorp", "category": "Browsers", "description": "Firefox-based browser"},
+    "LibreWolf": {"winget": "LibreWolf.LibreWolf", "category": "Browsers", "description": "Privacy-focused Firefox fork"},
+    "Mullvad Browser": {"winget": "MullvadVPN.MullvadBrowser", "category": "Browsers", "description": "Privacy browser by Mullvad"},
+    "Pale Moon": {"winget": "MoonchildProductions.PaleMoon", "category": "Browsers", "description": "Lightweight browser"},
+    "Thorium": {"winget": "Alex313031.Thorium.AVX2", "category": "Browsers", "description": "Speed-optimized Chromium"},
+    "Tor Browser": {"winget": "TorProject.TorBrowser", "category": "Browsers", "description": "Anonymous browsing"},
+    "Ungoogled Chromium": {"winget": "eloston.ungoogled-chromium", "category": "Browsers", "description": "Chromium without Google"},
+    "Vivaldi": {"winget": "Vivaldi.Vivaldi", "category": "Browsers", "description": "Customizable browser"},
+    "Waterfox": {"winget": "Waterfox.Waterfox", "category": "Browsers", "description": "Privacy-focused Firefox fork"},
+    "Zen Browser": {"winget": "Zen-Team.Zen-Browser", "category": "Browsers", "description": "Modern Firefox-based browser"},
+    "Falkon": {"winget": "KDE.Falkon", "category": "Browsers", "description": "KDE lightweight browser"},
+    
+    # ==================== UTILITIES ====================
+    "7-Zip": {"winget": "7zip.7zip", "category": "Utilities", "description": "File archiver"},
+    "Everything Search": {"winget": "voidtools.Everything", "category": "Utilities", "description": "Fast file search"},
+    "CPU-Z": {"winget": "CPUID.CPU-Z", "category": "Utilities", "description": "CPU information"},
+    "GPU-Z": {"winget": "TechPowerUp.GPU-Z", "category": "Utilities", "description": "GPU information"},
+    "HWiNFO": {"winget": "REALiX.HWiNFO", "category": "Utilities", "description": "Hardware info and monitoring"},
+    "HWMonitor": {"winget": "CPUID.HWMonitor", "category": "Utilities", "description": "Hardware monitoring"},
+    "Crystal Disk Info": {"winget": "CrystalDewWorld.CrystalDiskInfo", "category": "Utilities", "description": "Disk health monitor"},
+    "Crystal Disk Mark": {"winget": "CrystalDewWorld.CrystalDiskMark", "category": "Utilities", "description": "Disk benchmark"},
+    "TreeSize Free": {"winget": "JAMSoftware.TreeSize.Free", "category": "Utilities", "description": "Disk space analyzer"},
+    "WizTree": {"winget": "AntibodySoftware.WizTree", "category": "Utilities", "description": "Fast disk space analyzer"},
+    "SpaceSniffer": {"winget": "UderzoSoftware.SpaceSniffer", "category": "Utilities", "description": "Disk usage visualization"},
+    "Revo Uninstaller": {"winget": "RevoUninstaller.RevoUninstaller", "category": "Utilities", "description": "Advanced uninstaller"},
+    "Bulk Crap Uninstaller": {"winget": "Klocman.BulkCrapUninstaller", "category": "Utilities", "description": "Batch uninstaller"},
+    "Bitwarden": {"winget": "Bitwarden.Bitwarden", "category": "Utilities", "description": "Password manager"},
+    "KeePassXC": {"winget": "KeePassXCTeam.KeePassXC", "category": "Utilities", "description": "Offline password manager"},
+    "1Password": {"winget": "AgileBits.1Password", "category": "Utilities", "description": "Password manager"},
+    "AnyDesk": {"winget": "AnyDesk.AnyDesk", "category": "Utilities", "description": "Remote desktop"},
+    "TeamViewer": {"winget": "TeamViewer.TeamViewer", "category": "Utilities", "description": "Remote access"},
+    "Parsec": {"winget": "Parsec.Parsec", "category": "Utilities", "description": "Low-latency remote desktop"},
+    "Rufus": {"winget": "Rufus.Rufus", "category": "Utilities", "description": "Bootable USB creator"},
+    "Raspberry Pi Imager": {"winget": "RaspberryPiFoundation.RaspberryPiImager", "category": "Utilities", "description": "SD card imager"},
+    "DDU": {"winget": "Wagnardsoft.DisplayDriverUninstaller", "category": "Utilities", "description": "Display driver uninstaller"},
+    "NVCleanstall": {"winget": "TechPowerUp.NVCleanstall", "category": "Utilities", "description": "NVIDIA driver customizer"},
+    "MSI Afterburner": {"winget": "Guru3D.Afterburner", "category": "Utilities", "description": "GPU overclocking"},
+    "qBittorrent": {"winget": "qBittorrent.qBittorrent", "category": "Utilities", "description": "BitTorrent client"},
+    "Transmission": {"winget": "Transmission.Transmission", "category": "Utilities", "description": "Lightweight torrent client"},
+    "Deluge": {"winget": "DelugeTeam.Deluge", "category": "Utilities", "description": "BitTorrent client"},
+    "Flow Launcher": {"winget": "Flow-Launcher.Flow-Launcher", "category": "Utilities", "description": "Keystroke launcher"},
+    "Open Shell": {"winget": "Open-Shell.Open-Shell-Menu", "category": "Utilities", "description": "Start Menu replacement"},
+    "F.lux": {"winget": "flux.flux", "category": "Utilities", "description": "Blue light filter"},
+    "AutoHotkey": {"winget": "AutoHotkey.AutoHotkey", "category": "Utilities", "description": "Automation scripting"},
+    "Barrier": {"winget": "DebaucheeOpenSourceGroup.Barrier", "category": "Utilities", "description": "Software KVM"},
+    "CopyQ": {"winget": "hluk.CopyQ", "category": "Utilities", "description": "Clipboard manager"},
+    "Ditto": {"winget": "Ditto.Ditto", "category": "Utilities", "description": "Clipboard extension"},
+    "TranslucentTB": {"winget": "9PF4KZ2VN4W9", "category": "Utilities", "description": "Taskbar customization"},
+    "UniGetUI": {"winget": "MartiCliment.UniGetUI", "category": "Utilities", "description": "Package manager GUI"},
+    "Lively Wallpaper": {"winget": "rocksdanister.LivelyWallpaper", "category": "Utilities", "description": "Animated wallpapers"},
+    "Rainmeter": {"winget": "Rainmeter.Rainmeter", "category": "Utilities", "description": "Desktop customization"},
+    "Quicklook": {"winget": "QL-Win.QuickLook", "category": "Utilities", "description": "macOS-like file preview"},
+    "LocalSend": {"winget": "LocalSend.LocalSend", "category": "Utilities", "description": "AirDrop alternative"},
+    "Tailscale": {"winget": "tailscale.tailscale", "category": "Utilities", "description": "VPN mesh network"},
+    "ZeroTier One": {"winget": "ZeroTier.ZeroTierOne", "category": "Utilities", "description": "Software-defined networking"},
+    "Sandboxie Plus": {"winget": "Sandboxie.Plus", "category": "Utilities", "description": "Sandbox isolation"},
+    "Oracle VirtualBox": {"winget": "Oracle.VirtualBox", "category": "Utilities", "description": "Virtualization"},
+    "Google Drive": {"winget": "Google.GoogleDrive", "category": "Utilities", "description": "Cloud storage sync"},
+    "Nextcloud Desktop": {"winget": "Nextcloud.NextcloudDesktop", "category": "Utilities", "description": "Self-hosted cloud sync"},
+    "Duplicati": {"winget": "Duplicati.Duplicati", "category": "Utilities", "description": "Backup solution"},
+    "Process Lasso": {"winget": "BitSum.ProcessLasso", "category": "Utilities", "description": "Process optimizer"},
+    "BleachBit": {"winget": "BleachBit.BleachBit", "category": "Utilities", "description": "System cleaner"},
+    "Glary Utilities": {"winget": "Glarysoft.GlaryUtilities", "category": "Utilities", "description": "System optimizer"},
+    "DevToys": {"winget": "DevToys-app.DevToys", "category": "Utilities", "description": "Developer utilities"},
+    "NanaZip": {"winget": "M2Team.NanaZip", "category": "Utilities", "description": "Modern 7-Zip fork"},
+    "PeaZip": {"winget": "Giorgiotani.Peazip", "category": "Utilities", "description": "Archive manager"},
+    "WinRAR": {"winget": "RARLab.WinRAR", "category": "Utilities", "description": "Archive manager"},
+    "Malwarebytes": {"winget": "Malwarebytes.Malwarebytes", "category": "Utilities", "description": "Anti-malware"},
+    "OpenRGB": {"winget": "OpenRGB.OpenRGB", "category": "Utilities", "description": "RGB lighting control"},
+    "SignalRGB": {"winget": "WhirlwindFX.SignalRgb", "category": "Utilities", "description": "RGB sync software"},
+    "KDE Connect": {"winget": "KDE.KDEConnect", "category": "Utilities", "description": "Phone-PC integration"},
+    "Twinkle Tray": {"winget": "xanderfrangos.twinkletray", "category": "Utilities", "description": "Monitor brightness control"},
+    "Monitorian": {"winget": "emoacht.Monitorian", "category": "Utilities", "description": "Monitor brightness control"},
+    "Snappy Driver Installer Origin": {"winget": "GlennDelahoy.SnappyDriverInstallerOrigin", "category": "Utilities", "description": "Driver updater"},
+    "Nilesoft Shell": {"winget": "Nilesoft.Shell", "category": "Utilities", "description": "Context menu extension"},
+    "OpenHashTab": {"winget": "namazso.OpenHashTab", "category": "Utilities", "description": "File hash checker"},
+    "LockHunter": {"winget": "CrystalRich.LockHunter", "category": "Utilities", "description": "File unlocker"},
+    "Total Commander": {"winget": "Ghisler.TotalCommander", "category": "Utilities", "description": "File manager"},
+    "Alacritty": {"winget": "Alacritty.Alacritty", "category": "Utilities", "description": "Fast terminal"},
+    "Tabby": {"winget": "Eugeny.Tabby", "category": "Utilities", "description": "Modern terminal"},
+    "Nushell": {"winget": "Nushell.Nushell", "category": "Utilities", "description": "Modern shell"},
+    "Gsudo": {"winget": "gerardog.gsudo", "category": "Utilities", "description": "Windows sudo"},
+    "SuperF4": {"winget": "StefanSundin.Superf4", "category": "Utilities", "description": "Force kill apps"},
+    "MSEdgeRedirect": {"winget": "rcmaehl.MSEdgeRedirect", "category": "Utilities", "description": "Redirect Edge links"},
+    "Windows Firewall Control": {"winget": "BiniSoft.WindowsFirewallControl", "category": "Utilities", "description": "Firewall GUI"},
+    "Auto Dark Mode": {"winget": "Armin2208.WindowsAutoNightMode", "category": "Utilities", "description": "Auto light/dark theme"},
+    "GlazeWM": {"winget": "glzr-io.glazewm", "category": "Utilities", "description": "Tiling window manager"},
+    "FanControl": {"winget": "Rem0o.FanControl", "category": "Utilities", "description": "Fan speed control"},
+    "Windhawk": {"winget": "RamenSoftware.Windhawk", "category": "Utilities", "description": "Windows customization"},
+    "WinPaletter": {"winget": "Abdelrhman-AK.WinPaletter", "category": "Utilities", "description": "Windows color customizer"},
+    "OFGB": {"winget": "xM4ddy.OFGB", "category": "Utilities", "description": "Windows 11 ad remover"},
+    "Lenovo Legion Toolkit": {"winget": "BartoszCichecki.LenovoLegionToolkit", "category": "Utilities", "description": "Legion laptop utility"},
+    "Dropbox": {"winget": "Dropbox.Dropbox", "category": "Utilities", "description": "Cloud storage"},
+    "OrcaSlicer": {"winget": "SoftFever.OrcaSlicer", "category": "Utilities", "description": "3D printer slicer"},
+    "PrusaSlicer": {"winget": "Prusa3d.PrusaSlicer", "category": "Utilities", "description": "3D printer slicer"},
+    "Windows PC Health Check": {"winget": "Microsoft.WindowsPCHealthCheck", "category": "Utilities", "description": "Win11 compatibility check"},
+    "Xtreme Download Manager": {"winget": "subhra74.XtremeDownloadManager", "category": "Utilities", "description": "Download manager"},
+    "JDownloader": {"winget": "AppWork.JDownloader", "category": "Utilities", "description": "Download manager"},
+    "Motrix": {"winget": "agalwood.Motrix", "category": "Utilities", "description": "Download manager"},
+    "SyncTrayzor": {"winget": "GermanCoding.SyncTrayzor", "category": "Utilities", "description": "Syncthing tray app"},
+    "Fastfetch": {"winget": "Fastfetch-cli.Fastfetch", "category": "Utilities", "description": "System info display"},
+    "Neofetch Win": {"winget": "nepnep.neofetch-win", "category": "Utilities", "description": "System info display"},
+    "Link Shell Extension": {"winget": "HermannSchinagl.LinkShellExtension", "category": "Utilities", "description": "Symbolic link creator"},
+    "Espanso": {"winget": "Espanso.Espanso", "category": "Utilities", "description": "Text expander"},
+    "Carnac": {"winget": "code52.Carnac", "category": "Utilities", "description": "Keystroke visualizer"},
+    "Meld": {"winget": "Meld.Meld", "category": "Utilities", "description": "Visual diff tool"},
+    "XnView": {"winget": "XnSoft.XnView.Classic", "category": "Utilities", "description": "Image viewer"},
+    "JPEG View": {"winget": "sylikc.JPEGView", "category": "Utilities", "description": "Fast image viewer"},
+    "Zoxide": {"winget": "ajeetdsouza.zoxide", "category": "Utilities", "description": "Smarter cd command"},
+    "Bat": {"winget": "sharkdp.bat", "category": "Utilities", "description": "Cat alternative"},
+    "Ripgrep": {"winget": "BurntSushi.ripgrep.MSVC", "category": "Utilities", "description": "Fast grep tool"},
+    "Fzf": {"winget": "junegunn.fzf", "category": "Utilities", "description": "Fuzzy finder"},
+    "TeraCopy": {"winget": "CodeSector.TeraCopy", "category": "Utilities", "description": "Fast file copy"},
+    "WizFile": {"winget": "AntibodySoftware.WizFile", "category": "Utilities", "description": "Fast file search"},
+    "SageThumbs": {"winget": "CherubicSoftware.SageThumbs", "category": "Utilities", "description": "Enhanced thumbnails"},
+    "Wise Program Uninstaller": {"winget": "WiseCleaner.WiseProgramUninstaller", "category": "Utilities", "description": "Program uninstaller"},
+    "WiseToys": {"winget": "WiseCleaner.WiseToys", "category": "Utilities", "description": "Windows utilities collection"},
+    "TightVNC": {"winget": "GlavSoft.TightVNC", "category": "Utilities", "description": "VNC server/client"},
+    "UltraVNC": {"winget": "uvncbvba.UltraVnc", "category": "Utilities", "description": "VNC remote desktop"},
+    "Dual Monitor Tools": {"winget": "GNE.DualMonitorTools", "category": "Utilities", "description": "Multi-monitor utilities"},
+    "Borderless Gaming": {"winget": "Codeusa.BorderlessGaming", "category": "Utilities", "description": "Window borderless mode"},
+    "Compact GUI": {"winget": "IridiumIO.CompactGUI", "category": "Utilities", "description": "Folder compression"},
+    "ExifCleaner": {"winget": "szTheory.exifcleaner", "category": "Utilities", "description": "Metadata remover"},
+    "CapFrameX": {"winget": "CXWorld.CapFrameX", "category": "Utilities", "description": "Frame time analysis"},
+    "Intel PresentMon": {"winget": "Intel.PresentMon.Beta", "category": "Utilities", "description": "Gaming performance overlay"},
+    "Ente Auth": {"winget": "ente-io.auth-desktop", "category": "Utilities", "description": "2FA authenticator"},
+    "Proton Authenticator": {"winget": "Proton.ProtonAuthenticator", "category": "Utilities", "description": "Proton 2FA app"},
+    "Wazuh": {"winget": "Wazuh.WazuhAgent", "category": "Utilities", "description": "Security monitoring"},
+    "File Converter": {"winget": "AdrienAllard.FileConverter", "category": "Utilities", "description": "Context menu converter"},
+    "OPAutoClicker": {"winget": "OPAutoClicker.OPAutoClicker", "category": "Utilities", "description": "Auto clicker"},
+    "VistaSwitcher": {"winget": "ntwind.VistaSwitcher", "category": "Utilities", "description": "Alt-Tab replacement"},
+    "Ambie White Noise": {"winget": "9P07XNM5CHP0", "category": "Utilities", "description": "White noise app"},
+    "Magic Wormhole": {"winget": "magic-wormhole.magic-wormhole", "category": "Utilities", "description": "Secure file transfer"},
+    "croc": {"winget": "schollz.croc", "category": "Utilities", "description": "Secure file transfer"},
+    "JoyToKey": {"winget": "JTKsoftware.JoyToKey", "category": "Utilities", "description": "Controller to keyboard"},
+    "ForceAutoHDR": {"winget": "ForceAutoHDR.7gxycn08", "category": "Utilities", "description": "Force Auto HDR"},
+    "Syncthingtray": {"winget": "Martchus.syncthingtray", "category": "Utilities", "description": "Syncthing tray app"},
+    "Spacedrive": {"winget": "spacedrive.Spacedrive", "category": "Utilities", "description": "Cross-platform file manager"},
+    "HxD Hex Editor": {"winget": "MHNexus.HxD", "category": "Utilities", "description": "Hex editor"},
+    "Bulk Rename Utility": {"winget": "TGRMNSoftware.BulkRenameUtility", "category": "Utilities", "description": "Batch rename files"},
+    "Advanced Renamer": {"winget": "HulubuluSoftware.AdvancedRenamer", "category": "Utilities", "description": "Batch rename files"},
+    
+    # ==================== DEVELOPMENT ====================
+    "VS Code": {"winget": "Microsoft.VisualStudioCode", "category": "Development", "description": "Code editor"},
+    "VS Codium": {"winget": "VSCodium.VSCodium", "category": "Development", "description": "Open-source VS Code"},
+    "Visual Studio 2022": {"winget": "Microsoft.VisualStudio.2022.Community", "category": "Development", "description": "Full IDE"},
+    "Sublime Text": {"winget": "SublimeHQ.SublimeText.4", "category": "Development", "description": "Text editor"},
+    "Sublime Merge": {"winget": "SublimeHQ.SublimeMerge", "category": "Development", "description": "Git client"},
+    "Neovim": {"winget": "Neovim.Neovim", "category": "Development", "description": "Modern Vim"},
+    "Helix": {"winget": "Helix.Helix", "category": "Development", "description": "Post-modern text editor"},
+    "Zed": {"winget": "Zed.Zed", "category": "Development", "description": "High-performance editor"},
+    "Pulsar": {"winget": "Pulsar-Edit.Pulsar", "category": "Development", "description": "Community-led text editor"},
+    "Git": {"winget": "Git.Git", "category": "Development", "description": "Version control"},
+    "GitHub Desktop": {"winget": "GitHub.GitHubDesktop", "category": "Development", "description": "GitHub GUI client"},
+    "GitHub CLI": {"winget": "GitHub.cli", "category": "Development", "description": "GitHub CLI"},
+    "GitKraken": {"winget": "Axosoft.GitKraken", "category": "Development", "description": "Git GUI"},
+    "Git Extensions": {"winget": "GitExtensionsTeam.GitExtensions", "category": "Development", "description": "Git GUI"},
+    "Git Butler": {"winget": "GitButler.GitButler", "category": "Development", "description": "Modern Git client"},
+    "Fork": {"winget": "Fork.Fork", "category": "Development", "description": "Fast Git client"},
+    "Gitify": {"winget": "Gitify.Gitify", "category": "Development", "description": "GitHub notifications"},
+    "Lazygit": {"winget": "JesseDuffield.lazygit", "category": "Development", "description": "Terminal Git UI"},
+    "Docker Desktop": {"winget": "Docker.DockerDesktop", "category": "Development", "description": "Container platform"},
+    "Python3": {"winget": "Python.Python.3.14", "category": "Development", "description": "Python language"},
+    "Anaconda": {"winget": "Anaconda.Anaconda3", "category": "Development", "description": "Python distribution"},
+    "Miniconda": {"winget": "Anaconda.Miniconda3", "category": "Development", "description": "Minimal conda"},
+    "Pixi": {"winget": "prefix-dev.pixi", "category": "Development", "description": "Fast package manager"},
+    "NodeJS": {"winget": "OpenJS.NodeJS", "category": "Development", "description": "JavaScript runtime"},
+    "NodeJS LTS": {"winget": "OpenJS.NodeJS.LTS", "category": "Development", "description": "LTS Node version"},
+    "NVM for Windows": {"winget": "CoreyButler.NVMforWindows", "category": "Development", "description": "Node version manager"},
+    "Fast Node Manager": {"winget": "Schniz.fnm", "category": "Development", "description": "Fast Node manager"},
+    "Yarn": {"winget": "Yarn.Yarn", "category": "Development", "description": "JS package manager"},
+    "Rust": {"winget": "Rustlang.Rust.MSVC", "category": "Development", "description": "Rust language"},
+    "Go": {"winget": "GoLang.Go", "category": "Development", "description": "Go language"},
+    "Swift": {"winget": "Swift.Toolchain", "category": "Development", "description": "Swift language"},
+    "CMake": {"winget": "Kitware.CMake", "category": "Development", "description": "Build system"},
+    "Clink": {"winget": "chrisant996.Clink", "category": "Development", "description": "CMD enhancement"},
+    "Corretto 8": {"winget": "Amazon.Corretto.8.JDK", "category": "Development", "description": "Java 8 JDK"},
+    "Corretto 11": {"winget": "Amazon.Corretto.11.JDK", "category": "Development", "description": "Java 11 JDK"},
+    "Corretto 17": {"winget": "Amazon.Corretto.17.JDK", "category": "Development", "description": "Java 17 JDK"},
+    "Corretto 21": {"winget": "Amazon.Corretto.21.JDK", "category": "Development", "description": "Java 21 JDK"},
+    "Eclipse Temurin": {"winget": "EclipseAdoptium.Temurin.21.JDK", "category": "Development", "description": "OpenJDK distribution"},
+    "JetBrains Toolbox": {"winget": "JetBrains.Toolbox", "category": "Development", "description": "JetBrains tool manager"},
+    "Postman": {"winget": "Postman.Postman", "category": "Development", "description": "API development"},
+    "Oh My Posh": {"winget": "JanDeDobbeleer.OhMyPosh", "category": "Development", "description": "Shell prompt"},
+    "Starship": {"winget": "starship", "category": "Development", "description": "Cross-shell prompt"},
+    "Wezterm": {"winget": "wez.wezterm", "category": "Development", "description": "GPU terminal"},
+    "Godot Engine": {"winget": "GodotEngine.GodotEngine", "category": "Development", "description": "Game engine"},
+    "Unity Hub": {"winget": "Unity.UnityHub", "category": "Development", "description": "Unity game engine"},
+    "Vagrant": {"winget": "Hashicorp.Vagrant", "category": "Development", "description": "Virtual environments"},
+    "DaxStudio": {"winget": "DaxStudio.DaxStudio", "category": "Development", "description": "DAX query tool"},
+    "Thonny": {"winget": "AivarAnnamaa.Thonny", "category": "Development", "description": "Python IDE for beginners"},
+    "Mu Editor": {"winget": "Mu.Mu", "category": "Development", "description": "Python editor"},
+    "Aegisub": {"winget": "Aegisub.Aegisub", "category": "Development", "description": "Subtitle editor"},
+    
+    # ==================== MULTIMEDIA TOOLS ====================
+    "VLC": {"winget": "VideoLAN.VLC", "category": "Multimedia Tools", "description": "Media player"},
+    "Media Player Classic": {"winget": "clsid2.mpc-hc", "category": "Multimedia Tools", "description": "Classic media player"},
+    "OBS Studio": {"winget": "OBSProject.OBSStudio", "category": "Multimedia Tools", "description": "Streaming/recording"},
+    "HandBrake": {"winget": "HandBrake.HandBrake", "category": "Multimedia Tools", "description": "Video transcoder"},
+    "GIMP": {"winget": "GIMP.GIMP.3", "category": "Multimedia Tools", "description": "Image editor"},
+    "Inkscape": {"winget": "Inkscape.Inkscape", "category": "Multimedia Tools", "description": "Vector graphics"},
+    "Krita": {"winget": "KDE.Krita", "category": "Multimedia Tools", "description": "Digital painting"},
+    "Paint.NET": {"winget": "dotPDN.PaintDotNet", "category": "Multimedia Tools", "description": "Image editor"},
+    "Blender": {"winget": "BlenderFoundation.Blender", "category": "Multimedia Tools", "description": "3D creation suite"},
+    "FreeCAD": {"winget": "FreeCAD.FreeCAD", "category": "Multimedia Tools", "description": "3D CAD modeler"},
+    "OpenSCAD": {"winget": "OpenSCAD.OpenSCAD", "category": "Multimedia Tools", "description": "Script-based 3D CAD"},
+    "Audacity": {"winget": "Audacity.Audacity", "category": "Multimedia Tools", "description": "Audio editor"},
+    "Kdenlive": {"winget": "KDE.Kdenlive", "category": "Multimedia Tools", "description": "Video editor"},
+    "Shotcut": {"winget": "Meltytech.Shotcut", "category": "Multimedia Tools", "description": "Video editor"},
+    "ShareX": {"winget": "ShareX.ShareX", "category": "Multimedia Tools", "description": "Screenshot tool"},
+    "Flameshot": {"winget": "Flameshot.Flameshot", "category": "Multimedia Tools", "description": "Screenshot tool"},
+    "Greenshot": {"winget": "Greenshot.Greenshot", "category": "Multimedia Tools", "description": "Screenshot tool"},
+    "Lightshot": {"winget": "Skillbrains.Lightshot", "category": "Multimedia Tools", "description": "Screenshot tool"},
+    "ImageGlass": {"winget": "DuongDieuPhap.ImageGlass", "category": "Multimedia Tools", "description": "Image viewer"},
+    "darktable": {"winget": "darktable.darktable", "category": "Multimedia Tools", "description": "Photo editor"},
+    "digiKam": {"winget": "KDE.digikam", "category": "Multimedia Tools", "description": "Photo manager"},
+    "Fire Alpaca": {"winget": "FireAlpaca.FireAlpaca", "category": "Multimedia Tools", "description": "Digital painting"},
+    "FFmpeg": {"winget": "Gyan.FFmpeg", "category": "Multimedia Tools", "description": "Multimedia framework"},
+    "Plex Media Server": {"winget": "Plex.PlexMediaServer", "category": "Multimedia Tools", "description": "Media server"},
+    "Plex Desktop": {"winget": "Plex.Plex", "category": "Multimedia Tools", "description": "Plex client"},
+    "Jellyfin Server": {"winget": "Jellyfin.Server", "category": "Multimedia Tools", "description": "Open-source media server"},
+    "Jellyfin Media Player": {"winget": "Jellyfin.JellyfinMediaPlayer", "category": "Multimedia Tools", "description": "Jellyfin client"},
+    "Kodi": {"winget": "XBMCFoundation.Kodi", "category": "Multimedia Tools", "description": "Media center"},
+    "Stremio": {"winget": "Stremio.Stremio", "category": "Multimedia Tools", "description": "Stream organizer"},
+    "AIMP": {"winget": "AIMP.AIMP", "category": "Multimedia Tools", "description": "Music player"},
+    "foobar2000": {"winget": "PeterPawlowski.foobar2000", "category": "Multimedia Tools", "description": "Music player"},
+    "MusicBee": {"winget": "MusicBee.MusicBee", "category": "Multimedia Tools", "description": "Music player"},
+    "Clementine": {"winget": "Clementine.Clementine", "category": "Multimedia Tools", "description": "Music player"},
+    "Strawberry": {"winget": "StrawberryMusicPlayer.Strawberry", "category": "Multimedia Tools", "description": "Music player"},
+    "Harmonoid": {"winget": "Harmonoid.Harmonoid", "category": "Multimedia Tools", "description": "Music player"},
+    "iTunes": {"winget": "Apple.iTunes", "category": "Multimedia Tools", "description": "Apple media player"},
+    "EarTrumpet": {"winget": "File-New-Project.EarTrumpet", "category": "Multimedia Tools", "description": "Audio control"},
+    "Voicemeeter": {"winget": "VB-Audio.Voicemeeter", "category": "Multimedia Tools", "description": "Virtual audio mixer"},
+    "Voicemeeter Potato": {"winget": "VB-Audio.Voicemeeter.Potato", "category": "Multimedia Tools", "description": "Advanced audio mixer"},
+    "FxSound": {"winget": "FxSound.FxSound", "category": "Multimedia Tools", "description": "Audio enhancer"},
+    "K-Lite Codec Pack": {"winget": "CodecGuide.K-LiteCodecPack.Standard", "category": "Multimedia Tools", "description": "Media codecs"},
+    "ImgBurn": {"winget": "LIGHTNINGUK.ImgBurn", "category": "Multimedia Tools", "description": "Disc burning"},
+    "MuseScore": {"winget": "Musescore.Musescore", "category": "Multimedia Tools", "description": "Music notation"},
+    "Mp3tag": {"winget": "Mp3tag.Mp3tag", "category": "Multimedia Tools", "description": "Audio metadata editor"},
+    "TagScanner": {"winget": "SergeySerkov.TagScanner", "category": "Multimedia Tools", "description": "Audio tag editor"},
+    "nomacs": {"winget": "nomacs.nomacs", "category": "Multimedia Tools", "description": "Image viewer"},
+    "nGlide": {"winget": "ZeusSoftware.nGlide", "category": "Multimedia Tools", "description": "3Dfx Glide wrapper"},
+    "Modern Flyouts": {"winget": "ModernFlyouts.ModernFlyouts", "category": "Multimedia Tools", "description": "Modern volume flyout"},
+    "Tidal": {"winget": "9NNCB5BS59PH", "category": "Multimedia Tools", "description": "Hi-Fi streaming"},
+    "Videomass": {"winget": "GianlucaPernigotto.Videomass", "category": "Multimedia Tools", "description": "FFmpeg GUI"},
+    "Yt-dlp": {"winget": "yt-dlp.yt-dlp", "category": "Multimedia Tools", "description": "Video downloader"},
+    "QGIS": {"winget": "OSGeo.QGIS", "category": "Multimedia Tools", "description": "GIS software"},
+    "SMPlayer": {"winget": "SMPlayer.SMPlayer", "category": "Multimedia Tools", "description": "Media player"},
+    "NDI Tools": {"winget": "NDI.NDITools", "category": "Multimedia Tools", "description": "Video over IP"},
+    "KiCad": {"winget": "KiCad.KiCad", "category": "Multimedia Tools", "description": "EDA software"},
+    "Subtitle Edit": {"winget": "Nikse.SubtitleEdit", "category": "Multimedia Tools", "description": "Subtitle editor"},
+    
+    # ==================== COMMUNICATIONS ====================
+    "Discord": {"winget": "Discord.Discord", "category": "Communications", "description": "Chat platform"},
+    "Vesktop": {"winget": "Vencord.Vesktop", "category": "Communications", "description": "Enhanced Discord"},
+    "Slack": {"winget": "SlackTechnologies.Slack", "category": "Communications", "description": "Team collaboration"},
+    "Teams": {"winget": "Microsoft.Teams", "category": "Communications", "description": "Microsoft Teams"},
+    "Zoom": {"winget": "Zoom.Zoom", "category": "Communications", "description": "Video conferencing"},
+    "Telegram": {"winget": "Telegram.TelegramDesktop", "category": "Communications", "description": "Messaging app"},
+    "Unigram": {"winget": "Telegram.Unigram", "category": "Communications", "description": "Telegram for Windows"},
+    "Signal": {"winget": "OpenWhisperSystems.Signal", "category": "Communications", "description": "Secure messaging"},
+    "Element": {"winget": "Element.Element", "category": "Communications", "description": "Matrix client"},
+    "Session": {"winget": "Session.Session", "category": "Communications", "description": "Private messaging"},
+    "Revolt": {"winget": "Revolt.RevoltDesktop", "category": "Communications", "description": "Discord alternative"},
+    "Beeper": {"winget": "Beeper.Beeper", "category": "Communications", "description": "Universal chat app"},
+    "Ferdium": {"winget": "Ferdium.Ferdium", "category": "Communications", "description": "Multi-messenger"},
+    "Thunderbird": {"winget": "Mozilla.Thunderbird", "category": "Communications", "description": "Email client"},
+    "Betterbird": {"winget": "Betterbird.Betterbird", "category": "Communications", "description": "Thunderbird fork"},
+    "Viber": {"winget": "Rakuten.Viber", "category": "Communications", "description": "Messaging app"},
+    "Hexchat": {"winget": "HexChat.HexChat", "category": "Communications", "description": "IRC client"},
+    "Jami": {"winget": "SFLinux.Jami", "category": "Communications", "description": "VoIP service"},
+    "Linphone": {"winget": "BelledonneCommunications.Linphone", "category": "Communications", "description": "VoIP app"},
+    "QTox": {"winget": "Tox.qTox", "category": "Communications", "description": "P2P messaging"},
+    "Chatterino": {"winget": "ChatterinoTeam.Chatterino", "category": "Communications", "description": "Twitch chat client"},
+    "Zulip": {"winget": "Zulip.Zulip", "category": "Communications", "description": "Team chat"},
+    
+    # ==================== GAMES ====================
+    "Steam": {"winget": "Valve.Steam", "category": "Games", "description": "Gaming platform"},
+    "Epic Games Launcher": {"winget": "EpicGames.EpicGamesLauncher", "category": "Games", "description": "Epic Games store"},
+    "GOG Galaxy": {"winget": "GOG.Galaxy", "category": "Games", "description": "GOG game client"},
+    "EA App": {"winget": "ElectronicArts.EADesktop", "category": "Games", "description": "EA gaming platform"},
+    "Ubisoft Connect": {"winget": "Ubisoft.Connect", "category": "Games", "description": "Ubisoft launcher"},
+    "Heroic Games Launcher": {"winget": "HeroicGamesLauncher.HeroicGamesLauncher", "category": "Games", "description": "Epic Games alternative"},
+    "Itch.io": {"winget": "ItchIo.Itch", "category": "Games", "description": "Indie game platform"},
+    "Playnite": {"winget": "Playnite.Playnite", "category": "Games", "description": "Game library manager"},
+    "Prism Launcher": {"winget": "PrismLauncher.PrismLauncher", "category": "Games", "description": "Minecraft launcher"},
+    "GeForce NOW": {"winget": "Nvidia.GeForceNow", "category": "Games", "description": "Cloud gaming"},
+    "Moonlight": {"winget": "MoonlightGameStreamingProject.Moonlight", "category": "Games", "description": "Game streaming client"},
+    "Sunshine": {"winget": "LizardByte.Sunshine", "category": "Games", "description": "Game streaming server"},
+    "PS Remote Play": {"winget": "PlayStation.PSRemotePlay", "category": "Games", "description": "PlayStation streaming"},
+    "Virtual Desktop Streamer": {"winget": "VirtualDesktop.Streamer", "category": "Games", "description": "VR streaming"},
+    "SideQuestVR": {"winget": "SideQuestVR.SideQuest", "category": "Games", "description": "VR app sideloader"},
+    "TCNO Account Switcher": {"winget": "TechNobo.TcNoAccountSwitcher", "category": "Games", "description": "Game account switcher"},
+    "Clone Hero": {"winget": "CloneHeroTeam.CloneHero", "category": "Games", "description": "Guitar Hero clone"},
+    "Cemu": {"winget": "Cemu.Cemu", "category": "Games", "description": "Wii U emulator"},
+    "XEMU": {"winget": "xemu-project.xemu", "category": "Games", "description": "Xbox emulator"},
+    "Emulation Station": {"winget": "Emulationstation.Emulationstation", "category": "Games", "description": "Emulator frontend"},
+    
+    # ==================== MICROSOFT TOOLS ====================
+    ".NET Runtime 3.1": {"winget": "Microsoft.DotNet.DesktopRuntime.3_1", "category": "Microsoft Tools", "description": ".NET 3.1 runtime"},
+    ".NET Runtime 5": {"winget": "Microsoft.DotNet.DesktopRuntime.5", "category": "Microsoft Tools", "description": ".NET 5 runtime"},
+    ".NET Runtime 6": {"winget": "Microsoft.DotNet.DesktopRuntime.6", "category": "Microsoft Tools", "description": ".NET 6 runtime"},
+    ".NET Runtime 7": {"winget": "Microsoft.DotNet.DesktopRuntime.7", "category": "Microsoft Tools", "description": ".NET 7 runtime"},
+    ".NET Runtime 8": {"winget": "Microsoft.DotNet.DesktopRuntime.8", "category": "Microsoft Tools", "description": ".NET 8 runtime"},
+    ".NET Runtime 9": {"winget": "Microsoft.DotNet.DesktopRuntime.9", "category": "Microsoft Tools", "description": ".NET 9 runtime"},
+    "VC++ 2015-2022 x86": {"winget": "Microsoft.VCRedist.2015+.x86", "category": "Microsoft Tools", "description": "Visual C++ runtime"},
+    "VC++ 2015-2022 x64": {"winget": "Microsoft.VCRedist.2015+.x64", "category": "Microsoft Tools", "description": "Visual C++ runtime"},
+    "PowerShell 7": {"winget": "Microsoft.PowerShell", "category": "Microsoft Tools", "description": "Modern PowerShell"},
+    "PowerToys": {"winget": "Microsoft.PowerToys", "category": "Microsoft Tools", "description": "Power user utilities"},
+    "Windows Terminal": {"winget": "Microsoft.WindowsTerminal", "category": "Microsoft Tools", "description": "Modern terminal"},
+    "OneDrive": {"winget": "Microsoft.OneDrive", "category": "Microsoft Tools", "description": "Cloud storage"},
+    "Azure Data Studio": {"winget": "Microsoft.AzureDataStudio", "category": "Microsoft Tools", "description": "Data management"},
+    "SQL Server Management Studio": {"winget": "Microsoft.SQLServerManagementStudio", "category": "Microsoft Tools", "description": "SQL database management"},
+    "Power Automate Desktop": {"winget": "Microsoft.PowerAutomateDesktop", "category": "Microsoft Tools", "description": "Desktop automation"},
+    "Power BI": {"winget": "Microsoft.PowerBI", "category": "Microsoft Tools", "description": "Data visualization"},
+    "NuGet": {"winget": "Microsoft.NuGet", "category": "Microsoft Tools", "description": ".NET package manager"},
+    "Autoruns": {"winget": "Microsoft.Sysinternals.Autoruns", "category": "Microsoft Tools", "description": "Startup manager"},
+    "Process Monitor": {"winget": "Microsoft.Sysinternals.ProcessMonitor", "category": "Microsoft Tools", "description": "Process monitor"},
+    "TCPView": {"winget": "Microsoft.Sysinternals.TCPView", "category": "Microsoft Tools", "description": "Network monitoring"},
+    "ZoomIt": {"winget": "Microsoft.Sysinternals.ZoomIt", "category": "Microsoft Tools", "description": "Screen zoom tool"},
+    "RDCMan": {"winget": "Microsoft.Sysinternals.RDCMan", "category": "Microsoft Tools", "description": "Remote Desktop manager"},
+    "DISMTools": {"winget": "CodingWondersSoftware.DISMTools.Stable", "category": "Microsoft Tools", "description": "DISM GUI"},
+    "NTLite": {"winget": "Nlitesoft.NTLite", "category": "Microsoft Tools", "description": "Windows customizer"},
+    
+    # ==================== PRO TOOLS ====================
+    "PuTTY": {"winget": "PuTTY.PuTTY", "category": "Pro Tools", "description": "SSH/Telnet client"},
+    "WinSCP": {"winget": "WinSCP.WinSCP", "category": "Pro Tools", "description": "SFTP/FTP client"},
+    "mRemoteNG": {"winget": "mRemoteNG.mRemoteNG", "category": "Pro Tools", "description": "Remote connections manager"},
+    "RustDesk": {"winget": "RustDesk.RustDesk", "category": "Pro Tools", "description": "Remote desktop"},
+    "Advanced IP Scanner": {"winget": "Famatech.AdvancedIPScanner", "category": "Pro Tools", "description": "Network scanner"},
+    "Angry IP Scanner": {"winget": "angryziber.AngryIPScanner", "category": "Pro Tools", "description": "Network scanner"},
+    "Nmap": {"winget": "Insecure.Nmap", "category": "Pro Tools", "description": "Network scanner"},
+    "Wireshark": {"winget": "WiresharkFoundation.Wireshark", "category": "Pro Tools", "description": "Network analyzer"},
+    "HeidiSQL": {"winget": "HeidiSQL.HeidiSQL", "category": "Pro Tools", "description": "Database client"},
+    "Simplewall": {"winget": "Henry++.simplewall", "category": "Pro Tools", "description": "Firewall"},
+    "Portmaster": {"winget": "Safing.Portmaster", "category": "Pro Tools", "description": "Application firewall"},
+    "WireGuard": {"winget": "WireGuard.WireGuard", "category": "Pro Tools", "description": "VPN protocol"},
+    "OpenVPN Connect": {"winget": "OpenVPNTechnologies.OpenVPNConnect", "category": "Pro Tools", "description": "VPN client"},
+    "Mullvad VPN": {"winget": "MullvadVPN.MullvadVPN", "category": "Pro Tools", "description": "VPN service"},
+    "NetBird": {"winget": "netbird", "category": "Pro Tools", "description": "VPN mesh network"},
+    "Ventoy": {"winget": "Ventoy.Ventoy", "category": "Pro Tools", "description": "Multi-boot USB creator"},
+    "EFI Boot Editor": {"winget": "EFIBootEditor.EFIBootEditor", "category": "Pro Tools", "description": "EFI boot manager"},
+    "XPipe": {"winget": "xpipe-io.xpipe", "category": "Pro Tools", "description": "Container orchestration"},
+    
+    # ==================== DOCUMENT ====================
+    "LibreOffice": {"winget": "TheDocumentFoundation.LibreOffice", "category": "Document", "description": "Office suite"},
+    "ONLYOffice": {"winget": "ONLYOFFICE.DesktopEditors", "category": "Document", "description": "Office suite"},
+    "Notepad++": {"winget": "Notepad++.Notepad++", "category": "Document", "description": "Code editor"},
+    "Obsidian": {"winget": "Obsidian.Obsidian", "category": "Document", "description": "Knowledge base"},
+    "Joplin": {"winget": "Joplin.Joplin", "category": "Document", "description": "Note-taking app"},
+    "Logseq": {"winget": "Logseq.Logseq", "category": "Document", "description": "Outliner notes"},
+    "Simplenote": {"winget": "Automattic.Simplenote", "category": "Document", "description": "Simple notes"},
+    "massCode": {"winget": "antonreshetov.massCode", "category": "Document", "description": "Snippet manager"},
+    "Anki": {"winget": "Anki.Anki", "category": "Document", "description": "Flashcard app"},
+    "Calibre": {"winget": "calibre.calibre", "category": "Document", "description": "E-book manager"},
+    "AFFiNE": {"winget": "ToEverything.AFFiNE", "category": "Document", "description": "Notion alternative"},
+    "Adobe Acrobat Reader": {"winget": "Adobe.Acrobat.Reader.64-bit", "category": "Document", "description": "PDF reader"},
+    "Foxit PDF Reader": {"winget": "Foxit.FoxitReader", "category": "Document", "description": "PDF reader"},
+    "Foxit PDF Editor": {"winget": "Foxit.PhantomPDF", "category": "Document", "description": "PDF editor"},
+    "Sumatra PDF": {"winget": "SumatraPDF.SumatraPDF", "category": "Document", "description": "Lightweight PDF reader"},
+    "PDFgear": {"winget": "PDFgear.PDFgear", "category": "Document", "description": "PDF tool"},
+    "PDF24 Creator": {"winget": "geeksoftwareGmbH.PDF24Creator", "category": "Document", "description": "PDF tools"},
+    "PDFsam Basic": {"winget": "PDFsam.PDFsam", "category": "Document", "description": "PDF split/merge"},
+    "Okular": {"winget": "KDE.Okular", "category": "Document", "description": "Document viewer"},
+    "NAPS2": {"winget": "Cyanfish.NAPS2", "category": "Document", "description": "Document scanner"},
+    "WinMerge": {"winget": "WinMerge.WinMerge", "category": "Document", "description": "Diff/merge tool"},
+    "Zim Desktop Wiki": {"winget": "Zimwiki.Zim", "category": "Document", "description": "Desktop wiki"},
+    "Znote": {"winget": "alagrede.znote", "category": "Document", "description": "Note-taking"},
+    "Xournal++": {"winget": "Xournal++.Xournal++", "category": "Document", "description": "Handwriting notes"},
+    "Zotero": {"winget": "DigitalScholar.Zotero", "category": "Document", "description": "Research manager"},
+}
+
+# Helper functions for the app database
+def get_apps_by_category():
+    """Returns a dictionary of apps organized by category"""
+    categories = {}
+    for app_name, app_data in INSTALLABLE_APPS.items():
+        category = app_data["category"]
+        if category not in categories:
+            categories[category] = []
+        categories[category].append({
+            "name": app_name,
+            "winget": app_data["winget"],
+            "description": app_data["description"]
+        })
+    for category in categories:
+        categories[category].sort(key=lambda x: x["name"])
+    return categories
+
+def get_categories():
+    """Returns a sorted list of all categories"""
+    categories = set()
+    for app_data in INSTALLABLE_APPS.values():
+        categories.add(app_data["category"])
+    return sorted(categories)
+
 
 # Constants for hiding console windows
 CREATE_NO_WINDOW = 0x08000000
@@ -332,7 +737,7 @@ class StorageSenseApp(ctk.CTkToplevel):
     """StorageSense Disk Analyzer - Opens as a child window of the main app."""
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("StorageSense - Professional Disk Analyzer")
+        self.title("Windows System Cleaner - Professional Disk Analyzer")
         self.geometry("1500x850")
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -750,7 +1155,9 @@ LIGHT_THEME = {
     'admin_indicator': '#059669',
     'user_indicator': '#D97706',  # Amber 600
     'card_bg': '#FFFFFF',
-    'card_border': '#E2E8F0'
+    'card_border': '#E2E8F0',
+    'surface_alt': '#F1F5F9',
+    'label_fg_dim': '#64748B'
 }
 
 DARK_THEME = {
@@ -788,11 +1195,174 @@ DARK_THEME = {
     'admin_indicator': '#34D399',
     'user_indicator': '#FBBF24',  # Amber 400
     'card_bg': '#0F172A',
-    'card_border': '#1E293B'
+    'card_border': '#1E293B',
+    'surface_alt': '#1E293B',
+    'label_fg_dim': '#94A3B8'
+}
+
+# Fun Theme: Cyberpunk - Neon pink and cyan on dark
+CYBERPUNK_THEME = {
+    'bg': '#0D0221',           # Deep purple-black
+    'fg': '#00FFFF',           # Cyan
+    'surface': '#1A0533',       # Dark purple
+    'surface_alt': '#2D0845',   # Purple
+    'primary': '#FF00FF',       # Magenta
+    'select_bg': '#3D1A5C',
+    'select_fg': '#00FFFF',
+    'button_bg': '#FF00FF',     # Magenta
+    'button_fg': '#0D0221',
+    'button_secondary_bg': '#00FFFF',
+    'button_secondary_fg': '#0D0221',
+    'entry_bg': '#1A0533',
+    'entry_fg': '#00FFFF',
+    'text_bg': '#1A0533',
+    'text_fg': '#00FFFF',
+    'log_text_fg': '#39FF14',   # Neon green
+    'frame_bg': '#1A0533',
+    'label_bg': '#0D0221',
+    'label_fg': '#FF00FF',
+    'header_bg': '#1A0533',
+    'header_fg': '#00FFFF',
+    'progress_bg': '#FF00FF',
+    'admin_fg': '#39FF14',
+    'admin_error_fg': '#FF3131',
+    'menu_bg': '#1A0533',
+    'menu_fg': '#00FFFF',
+    'task_bg': '#2D0845',
+    'task_fg': '#FF69B4',       # Hot pink
+    'task_border': '#FF00FF',
+    'tooltip_bg': '#00FFFF',
+    'tooltip_fg': '#0D0221',
+    'admin_indicator': '#39FF14',
+    'user_indicator': '#FFD700',
+    'card_bg': '#1A0533',
+    'card_border': '#FF00FF',
+    'label_fg_dim': '#8B5CF6'
+}
+
+# Fun Theme: Ocean - Blues and teals
+OCEAN_THEME = {
+    'bg': '#0A1628',           # Deep ocean
+    'fg': '#E0F7FA',           # Light cyan
+    'surface': '#0D2B45',       # Ocean depth
+    'surface_alt': '#124A6B',   # Mid ocean
+    'primary': '#00ACC1',       # Cyan
+    'select_bg': '#1A6B8A',
+    'select_fg': '#E0F7FA',
+    'button_bg': '#00ACC1',
+    'button_fg': '#FFFFFF',
+    'button_secondary_bg': '#26C6DA',
+    'button_secondary_fg': '#0A1628',
+    'entry_bg': '#0D2B45',
+    'entry_fg': '#E0F7FA',
+    'text_bg': '#0D2B45',
+    'text_fg': '#E0F7FA',
+    'log_text_fg': '#4DD0E1',   # Light teal
+    'frame_bg': '#0D2B45',
+    'label_bg': '#0A1628',
+    'label_fg': '#80DEEA',
+    'header_bg': '#0D2B45',
+    'header_fg': '#E0F7FA',
+    'progress_bg': '#00ACC1',
+    'admin_fg': '#00E676',
+    'admin_error_fg': '#FF5252',
+    'menu_bg': '#0D2B45',
+    'menu_fg': '#E0F7FA',
+    'task_bg': '#124A6B',
+    'task_fg': '#B2EBF2',
+    'task_border': '#00ACC1',
+    'tooltip_bg': '#E0F7FA',
+    'tooltip_fg': '#0A1628',
+    'admin_indicator': '#00E676',
+    'user_indicator': '#FFAB40',
+    'card_bg': '#0D2B45',
+    'card_border': '#00ACC1',
+    'label_fg_dim': '#4DD0E1'
+}
+
+# Fun Theme: Sunset - Warm oranges and purples
+SUNSET_THEME = {
+    'bg': '#1A0A2E',           # Deep purple night
+    'fg': '#FFECD2',           # Warm cream
+    'surface': '#2D1B4E',       # Purple dusk
+    'surface_alt': '#4A2C6A',   # Twilight
+    'primary': '#FF6B35',       # Sunset orange
+    'select_bg': '#5C3D7A',
+    'select_fg': '#FFECD2',
+    'button_bg': '#FF6B35',
+    'button_fg': '#1A0A2E',
+    'button_secondary_bg': '#FFB347',
+    'button_secondary_fg': '#1A0A2E',
+    'entry_bg': '#2D1B4E',
+    'entry_fg': '#FFECD2',
+    'text_bg': '#2D1B4E',
+    'text_fg': '#FFECD2',
+    'log_text_fg': '#FFD700',   # Golden
+    'frame_bg': '#2D1B4E',
+    'label_bg': '#1A0A2E',
+    'label_fg': '#FF9A56',
+    'header_bg': '#2D1B4E',
+    'header_fg': '#FFECD2',
+    'progress_bg': '#FF6B35',
+    'admin_fg': '#7CFC00',
+    'admin_error_fg': '#FF4757',
+    'menu_bg': '#2D1B4E',
+    'menu_fg': '#FFECD2',
+    'task_bg': '#4A2C6A',
+    'task_fg': '#FFB8A1',
+    'task_border': '#FF6B35',
+    'tooltip_bg': '#FFECD2',
+    'tooltip_fg': '#1A0A2E',
+    'admin_indicator': '#7CFC00',
+    'user_indicator': '#FFD700',
+    'card_bg': '#2D1B4E',
+    'card_border': '#FF6B35',
+    'label_fg_dim': '#A78BFA'
+}
+
+# Fun Theme: Forest - Greens and earth tones
+FOREST_THEME = {
+    'bg': '#0D1F0D',           # Deep forest
+    'fg': '#E8F5E9',           # Light green
+    'surface': '#1B3B1B',       # Forest floor
+    'surface_alt': '#2E5A2E',   # Fern green
+    'primary': '#4CAF50',       # Green
+    'select_bg': '#3E7A3E',
+    'select_fg': '#E8F5E9',
+    'button_bg': '#4CAF50',
+    'button_fg': '#FFFFFF',
+    'button_secondary_bg': '#8BC34A',
+    'button_secondary_fg': '#0D1F0D',
+    'entry_bg': '#1B3B1B',
+    'entry_fg': '#E8F5E9',
+    'text_bg': '#1B3B1B',
+    'text_fg': '#E8F5E9',
+    'log_text_fg': '#76FF03',   # Lime
+    'frame_bg': '#1B3B1B',
+    'label_bg': '#0D1F0D',
+    'label_fg': '#A5D6A7',
+    'header_bg': '#1B3B1B',
+    'header_fg': '#E8F5E9',
+    'progress_bg': '#4CAF50',
+    'admin_fg': '#76FF03',
+    'admin_error_fg': '#FF6B6B',
+    'menu_bg': '#1B3B1B',
+    'menu_fg': '#E8F5E9',
+    'task_bg': '#2E5A2E',
+    'task_fg': '#C8E6C9',
+    'task_border': '#4CAF50',
+    'tooltip_bg': '#E8F5E9',
+    'tooltip_fg': '#0D1F0D',
+    'admin_indicator': '#76FF03',
+    'user_indicator': '#FFB74D',
+    'card_bg': '#1B3B1B',
+    'card_border': '#4CAF50',
+    'label_fg_dim': '#81C784'
 }
 
 
 # Enhanced startup logging
+
 def startup_log(message):
     """Log startup messages to both console and file"""
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -949,33 +1519,46 @@ class Tooltip:
         self.widget.bind("<Leave>", self.leave)
 
     def enter(self, event=None):
+        if self.tooltip or not self.text:
+            return
+
         x = self.widget.winfo_rootx() + 25
         y = self.widget.winfo_rooty() + 25
 
-        self.tooltip = tk.Toplevel(self.widget)
-        self.tooltip.wm_overrideredirect(True)
-        self.tooltip.wm_geometry(f"+{x}+{y}")
-        self.tooltip.attributes("-topmost", True)
+        try:
+            self.tooltip = tk.Toplevel(self.widget)
+            self.tooltip.wm_overrideredirect(True)
+            self.tooltip.wm_geometry(f"+{x}+{y}")
+            self.tooltip.attributes("-topmost", True)
 
-        label = tk.Label(
-            self.tooltip,
-            text=self.text,
-            justify=tk.LEFT,
-            background=self.theme['tooltip_bg'],
-            foreground=self.theme['tooltip_fg'],
-            relief=tk.FLAT,
-            padx=10,
-            pady=5,
-            font=('Segoe UI', 9)
-        )
-        label.pack()
+            label = tk.Label(
+                self.tooltip,
+                text=self.text,
+                justify=tk.LEFT,
+                background=self.theme.get('tooltip_bg', '#F8FAFC'),
+                foreground=self.theme.get('tooltip_fg', '#0F172A'),
+                relief=tk.FLAT,
+                padx=10,
+                pady=5,
+                font=('Segoe UI', 9)
+            )
+            label.pack()
 
-        # Add a subtle border
-        self.tooltip.config(bg=self.theme['tooltip_fg']) # Outer color as border
+            # Add a subtle border
+            self.tooltip.config(bg=self.theme.get('tooltip_fg', '#0F172A')) # Outer color as border
+        except Exception as e:
+            print(f"DEBUG: Tooltip creation failed: {e}")
+            if self.tooltip:
+                self.tooltip.destroy()
+                self.tooltip = None
 
     def leave(self, event=None):
         if self.tooltip:
-            self.tooltip.destroy()
+            try:
+                self.tooltip.destroy()
+            except:
+                pass
+            self.tooltip = None
 
 
 # PC Reporter class moved outside of SystemCleanerGUI
@@ -3312,7 +3895,7 @@ class SystemCleanerGUI:
             except:
                 pass
 
-            self.root.title("EAWTECH-Tool")
+            self.root.title("Windows System Cleaner")
             self.root.geometry("1100x1000")
             self.root.minsize(900, 750)
             self.root.resizable(True, True)
@@ -3377,13 +3960,51 @@ class SystemCleanerGUI:
         view_menu = Menu(menubar, tearoff=0, bg=self.theme['menu_bg'], fg=self.theme['menu_fg'])
         menubar.add_cascade(label="View", menu=view_menu)
 
-        # Dark mode toggle
-        self.dark_mode_var = tk.BooleanVar(value=True)
-        view_menu.add_checkbutton(
-            label="Dark Mode",
-            variable=self.dark_mode_var,
-            command=self.toggle_dark_mode
+        # Theme submenu
+        theme_menu = Menu(view_menu, tearoff=0, bg=self.theme['menu_bg'], fg=self.theme['menu_fg'])
+        view_menu.add_cascade(label="🎨 Theme", menu=theme_menu)
+        
+        self.theme_var = tk.StringVar(value='dark')
+        theme_menu.add_radiobutton(
+            label="☀️ Light",
+            variable=self.theme_var,
+            value='light',
+            command=lambda: self.switch_theme('light')
         )
+        theme_menu.add_radiobutton(
+            label="🌙 Dark",
+            variable=self.theme_var,
+            value='dark',
+            command=lambda: self.switch_theme('dark')
+        )
+        theme_menu.add_separator()
+        theme_menu.add_radiobutton(
+            label="🌃 Cyberpunk",
+            variable=self.theme_var,
+            value='cyberpunk',
+            command=lambda: self.switch_theme('cyberpunk')
+        )
+        theme_menu.add_radiobutton(
+            label="🌊 Ocean",
+            variable=self.theme_var,
+            value='ocean',
+            command=lambda: self.switch_theme('ocean')
+        )
+        theme_menu.add_radiobutton(
+            label="🌅 Sunset",
+            variable=self.theme_var,
+            value='sunset',
+            command=lambda: self.switch_theme('sunset')
+        )
+        theme_menu.add_radiobutton(
+            label="🌲 Forest",
+            variable=self.theme_var,
+            value='forest',
+            command=lambda: self.switch_theme('forest')
+        )
+        
+        # Keep dark_mode_var for backwards compatibility
+        self.dark_mode_var = tk.BooleanVar(value=True)
 
         # Font size menu
         font_menu = Menu(menubar, tearoff=0, bg=self.theme['menu_bg'], fg=self.theme['menu_fg'])
@@ -3419,6 +4040,7 @@ class SystemCleanerGUI:
         # Register menu for theme updates
         self.widgets.append(('menu', menubar))
         self.widgets.append(('menu', view_menu))
+        self.widgets.append(('menu', theme_menu))
         self.widgets.append(('menu', font_menu))
 
     def change_font_size(self, size):
@@ -3453,13 +4075,31 @@ class SystemCleanerGUI:
                     pass  # Ignore errors
 
     def toggle_dark_mode(self):
-        """Toggle between light and dark mode"""
+        """Toggle between light and dark mode (legacy compatibility)"""
         if self.dark_mode_var.get():
-            self.current_theme = 'dark'
-            self.theme = DARK_THEME
+            self.switch_theme('dark')
         else:
-            self.current_theme = 'light'
-            self.theme = LIGHT_THEME
+            self.switch_theme('light')
+
+    def switch_theme(self, theme_name):
+        """Switch to a specific theme by name"""
+        theme_map = {
+            'light': LIGHT_THEME,
+            'dark': DARK_THEME,
+            'cyberpunk': CYBERPUNK_THEME,
+            'ocean': OCEAN_THEME,
+            'sunset': SUNSET_THEME,
+            'forest': FOREST_THEME
+        }
+        
+        if theme_name in theme_map:
+            self.current_theme = theme_name
+            self.theme = theme_map[theme_name]
+            self.theme_var.set(theme_name)
+            # Update dark_mode_var for backwards compatibility
+            self.dark_mode_var.set(theme_name != 'light')
+        else:
+            return
 
         # Apply theme to all widgets
         self.apply_theme()
@@ -3477,7 +4117,7 @@ class SystemCleanerGUI:
         # Save theme preference
         try:
             with open("theme_pref.json", "w") as f:
-                json.dump({"dark_mode": self.dark_mode_var.get()}, f)
+                json.dump({"theme": theme_name}, f)
         except:
             pass
 
@@ -3563,7 +4203,7 @@ class SystemCleanerGUI:
             title_font = ('Segoe UI', 18, 'bold')
             self.title_label = tk.Label(
                 self.header_frame,
-                text="EAWTECH-Tool",
+                text="Windows System Cleaner",
                 font=title_font,
                 bg=self.theme['header_bg'],
                 fg=self.theme['header_fg']
@@ -3572,13 +4212,46 @@ class SystemCleanerGUI:
             self.widgets.append(('label', self.title_label))
             self.widget_fonts[self.title_label] = title_font
 
-            # Main container with cleaner spacing
-            self.main_container = tk.Frame(self.root, bg=self.theme['bg'])
-            self.main_container.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+            # Scrollable container for all main content
+            self.scroll_canvas = tk.Canvas(self.root, bg=self.theme['bg'], highlightthickness=0)
+            self.scroll_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+            self.widgets.append(('canvas', self.scroll_canvas))
+            
+            # Scrollbar for the canvas
+            self.main_scrollbar = ttk.Scrollbar(self.root, orient=tk.VERTICAL, command=self.scroll_canvas.yview)
+            self.main_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+            
+            self.scroll_canvas.configure(yscrollcommand=self.main_scrollbar.set)
+            
+            # Main container inside the canvas
+            self.main_container = tk.Frame(self.scroll_canvas, bg=self.theme['bg'])
+            self.canvas_window = self.scroll_canvas.create_window((0, 0), window=self.main_container, anchor='nw')
             self.widgets.append(('frame', self.main_container))
+            
+            # Configure canvas scrolling
+            def configure_scroll_region(event):
+                self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox('all'))
+            
+            def configure_canvas_width(event):
+                self.scroll_canvas.itemconfig(self.canvas_window, width=event.width)
+            
+            self.main_container.bind('<Configure>', configure_scroll_region)
+            self.scroll_canvas.bind('<Configure>', configure_canvas_width)
+            
+            # Bind mousewheel scrolling
+            def on_mousewheel(event):
+                self.scroll_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+            
+            self.scroll_canvas.bind_all('<MouseWheel>', on_mousewheel)
+            
+            # Add padding inside main_container
+            self.content_frame = tk.Frame(self.main_container, bg=self.theme['bg'])
+            self.content_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+            self.widgets.append(('frame', self.content_frame))
+
 
             # Admin status (Pill style)
-            admin_container = tk.Frame(self.main_container, bg=self.theme['bg'])
+            admin_container = tk.Frame(self.content_frame, bg=self.theme['bg'])
             admin_container.pack(fill=tk.X, pady=(0, 20))
             self.widgets.append(('frame', admin_container))
 
@@ -3597,7 +4270,7 @@ class SystemCleanerGUI:
             self.widget_fonts[self.admin_label] = admin_font
 
             # Create a frame for the two columns
-            columns_frame = tk.Frame(self.main_container, bg=self.theme['bg'])
+            columns_frame = tk.Frame(self.content_frame, bg=self.theme['bg'])
             columns_frame.pack(fill=tk.BOTH, expand=True)
             self.widgets.append(('frame', columns_frame))
 
@@ -3676,11 +4349,16 @@ class SystemCleanerGUI:
             self.pc_report = tk.BooleanVar(value=False)
             self.chris_titus_utility = tk.BooleanVar(value=False)
             self.storage_sence = tk.BooleanVar(value=False)
+            self.oo_shutup10 = tk.BooleanVar(value=False)
+            self.edge_performance = tk.BooleanVar(value=False)
+            self.disable_gaming_features = tk.BooleanVar(value=False)
+            self.adjust_virtual_memory = tk.BooleanVar(value=False)
 
             # App settings variables
             self.stop_background_apps_var = tk.BooleanVar(value=False)
             self.disable_startup_apps_var = tk.BooleanVar(value=False)
             self.update_apps = tk.BooleanVar(value=False)
+
 
             # Checkbox containers
             self.checkbox_frame = tk.Frame(self.task_frame, bg=self.theme['surface'])
@@ -3718,7 +4396,7 @@ class SystemCleanerGUI:
             self.widget_fonts[self.temp_checkbox] = task_font
             temp_indicator = tk.Label(temp_frame, text="🛡️", font=('Segoe UI', 9), bg=self.theme['surface'], fg=self.theme['admin_indicator'])
             temp_indicator.pack(side=tk.RIGHT, padx=5)
-            Tooltip(self.temp_checkbox, "Removes temporary files from system directories to free up disk space", self.theme)
+            Tooltip(self.temp_checkbox, "Cleans: Windows Temp, User Temp, Prefetch, and browser caches. Frees up disk space without affecting system files.", self.theme)
 
             # Disk Cleanup
             disk_cleanup_frame = tk.Frame(self.checkbox_frame, bg=self.theme['surface'])
@@ -3739,7 +4417,7 @@ class SystemCleanerGUI:
             self.widget_fonts[self.disk_cleanup_checkbox] = task_font
             disk_cleanup_indicator = tk.Label(disk_cleanup_frame, text="🛡️", font=('Segoe UI', 9), bg=self.theme['surface'], fg=self.theme['admin_indicator'])
             disk_cleanup_indicator.pack(side=tk.RIGHT, padx=5)
-            Tooltip(self.disk_cleanup_checkbox, "Runs Windows Disk Cleanup with all options enabled", self.theme)
+            Tooltip(self.disk_cleanup_checkbox, "Runs Windows Disk Cleanup with ALL options enabled: System cache, Update cleanup, Thumbnails, and Error reports.", self.theme)
 
             # Fast Startup
             fast_startup_frame = tk.Frame(self.checkbox_frame, bg=self.theme['surface'])
@@ -3760,9 +4438,31 @@ class SystemCleanerGUI:
             self.widget_fonts[self.fast_startup_checkbox] = task_font
             fast_startup_indicator = tk.Label(fast_startup_frame, text="🛡️", font=('Segoe UI', 9), bg=self.theme['surface'], fg=self.theme['admin_indicator'])
             fast_startup_indicator.pack(side=tk.RIGHT, padx=5)
-            Tooltip(self.fast_startup_checkbox, "Disables Windows Fast Startup feature for faster shutdowns", self.theme)
+            Tooltip(self.fast_startup_checkbox, "Disables Fast Startup (Hybrid shutdown). Fixes issues with dual-boot, drivers, and ensures clean shutdowns. Recommended for most users.", self.theme)
+
+            # Adjust Virtual Memory (Core System Task)
+            virtual_memory_frame = tk.Frame(self.checkbox_frame, bg=self.theme['surface'])
+            virtual_memory_frame.pack(fill=tk.X, pady=2)
+            self.virtual_memory_checkbox = tk.Checkbutton(
+                virtual_memory_frame,
+                text="Optimize Virtual Memory",
+                variable=self.adjust_virtual_memory,
+                font=task_font,
+                anchor=tk.W,
+                bg=self.theme['surface'],
+                fg=self.theme['task_fg'],
+                selectcolor=self.theme['surface'],
+                activebackground=self.theme['surface_alt']
+            )
+            self.virtual_memory_checkbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            self.widgets.append(('checkbutton', self.virtual_memory_checkbox))
+            self.widget_fonts[self.virtual_memory_checkbox] = task_font
+            virtual_memory_indicator = tk.Label(virtual_memory_frame, text="🛡️", font=('Segoe UI', 9), bg=self.theme['surface'], fg=self.theme['admin_indicator'])
+            virtual_memory_indicator.pack(side=tk.RIGHT, padx=5)
+            Tooltip(self.virtual_memory_checkbox, "Detects your RAM (e.g. 16GB) → Sets page file to 2x RAM (32GB). Shows current vs recommended settings. Requires restart.", self.theme)
 
             # Create additional tasks checkboxes
+
             # PC Report
             pc_report_frame = tk.Frame(self.additional_checkbox_frame, bg=self.theme['surface'])
             pc_report_frame.pack(fill=tk.X, pady=2)
@@ -3810,7 +4510,7 @@ class SystemCleanerGUI:
             storage_sence_frame.pack(fill=tk.X, pady=2)
             self.storage_sence_checkbox = tk.Checkbutton(
                 storage_sence_frame,
-                text="StorageSence (Drive Scanner)",
+                text="Storage Analyzer (Drive Scanner)",
                 variable=self.storage_sence,
                 font=task_font,
                 anchor=tk.W,
@@ -3826,8 +4526,8 @@ class SystemCleanerGUI:
             storage_sence_indicator.pack(side=tk.RIGHT, padx=5)
             Tooltip(self.storage_sence_checkbox, "Launches advanced drive health and space scanner", self.theme)
 
-            # Windows Updates
-            windows_updates_frame = tk.Frame(self.additional_checkbox_frame, bg=self.theme['surface'])
+            # Windows Updates (moved to Core System Tasks)
+            windows_updates_frame = tk.Frame(self.checkbox_frame, bg=self.theme['surface'])
             windows_updates_frame.pack(fill=tk.X, pady=2)
             self.windows_updates_checkbox = tk.Checkbutton(
                 windows_updates_frame,
@@ -3868,8 +4568,8 @@ class SystemCleanerGUI:
             device_firmware_indicator.pack(side=tk.RIGHT, padx=5)
             Tooltip(self.device_firmware_checkbox, "Checks for Dell, HP, and Lenovo firmware updates", self.theme)
 
-            # Repair System
-            repair_system_frame = tk.Frame(self.additional_checkbox_frame, bg=self.theme['surface'])
+            # Repair System (moved to Core System Tasks)
+            repair_system_frame = tk.Frame(self.checkbox_frame, bg=self.theme['surface'])
             repair_system_frame.pack(fill=tk.X, pady=2)
             self.repair_system_checkbox = tk.Checkbutton(
                 repair_system_frame,
@@ -3889,8 +4589,8 @@ class SystemCleanerGUI:
             repair_system_indicator.pack(side=tk.RIGHT, padx=5)
             Tooltip(self.repair_system_checkbox, "Repairs Windows system files using SFC and DISM", self.theme)
 
-            # CHKDSK
-            chk_dsk_frame = tk.Frame(self.additional_checkbox_frame, bg=self.theme['surface'])
+            # CHKDSK (moved to Core System Tasks)
+            chk_dsk_frame = tk.Frame(self.checkbox_frame, bg=self.theme['surface'])
             chk_dsk_frame.pack(fill=tk.X, pady=2)
             self.chk_dsk_checkbox = tk.Checkbutton(
                 chk_dsk_frame,
@@ -4015,7 +4715,72 @@ class SystemCleanerGUI:
             autopilot_indicator.pack(side=tk.RIGHT, padx=5)
             Tooltip(self.autopilot_csv_checkbox, "Creates an AutoPilot CSV for deployment", self.theme)
 
+            # O&O ShutUp10
+            oo_shutup10_frame = tk.Frame(self.additional_checkbox_frame, bg=self.theme['surface'])
+            oo_shutup10_frame.pack(fill=tk.X, pady=2)
+            self.oo_shutup10_checkbox = tk.Checkbutton(
+                oo_shutup10_frame,
+                text="O&O ShutUp10 (Privacy Tool)",
+                variable=self.oo_shutup10,
+                font=task_font,
+                anchor=tk.W,
+                bg=self.theme['surface'],
+                fg=self.theme['task_fg'],
+                selectcolor=self.theme['surface'],
+                activebackground=self.theme['surface_alt']
+            )
+            self.oo_shutup10_checkbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            self.widgets.append(('checkbutton', self.oo_shutup10_checkbox))
+            self.widget_fonts[self.oo_shutup10_checkbox] = task_font
+            oo_shutup10_indicator = tk.Label(oo_shutup10_frame, text="🛡️", font=('Segoe UI', 9), bg=self.theme['surface'], fg=self.theme['admin_indicator'])
+            oo_shutup10_indicator.pack(side=tk.RIGHT, padx=5)
+            Tooltip(self.oo_shutup10_checkbox, "Downloads and launches O&O ShutUp10 - a free privacy tool that lets you control Windows 10/11 telemetry, Cortana, and data collection settings.", self.theme)
+
+            # Edge Performance Adjustments
+            edge_perf_frame = tk.Frame(self.additional_checkbox_frame, bg=self.theme['surface'])
+            edge_perf_frame.pack(fill=tk.X, pady=2)
+            self.edge_performance_checkbox = tk.Checkbutton(
+                edge_perf_frame,
+                text="Edge Performance Adjustments",
+                variable=self.edge_performance,
+                font=task_font,
+                anchor=tk.W,
+                bg=self.theme['surface'],
+                fg=self.theme['task_fg'],
+                selectcolor=self.theme['surface'],
+                activebackground=self.theme['surface_alt']
+            )
+            self.edge_performance_checkbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            self.widgets.append(('checkbutton', self.edge_performance_checkbox))
+            self.widget_fonts[self.edge_performance_checkbox] = task_font
+            edge_perf_indicator = tk.Label(edge_perf_frame, text="👤", font=('Segoe UI', 9), bg=self.theme['surface'], fg=self.theme['user_indicator'])
+            edge_perf_indicator.pack(side=tk.RIGHT, padx=5)
+            Tooltip(self.edge_performance_checkbox, "Disables: Startup Boost (runs Edge at boot), Background Apps. Changes default search to Google instead of Bing.", self.theme)
+
+            # Turn Off Gaming Features
+            gaming_features_frame = tk.Frame(self.additional_checkbox_frame, bg=self.theme['surface'])
+            gaming_features_frame.pack(fill=tk.X, pady=2)
+            self.gaming_features_checkbox = tk.Checkbutton(
+                gaming_features_frame,
+                text="Turn Off All Gaming Features",
+                variable=self.disable_gaming_features,
+                font=task_font,
+                anchor=tk.W,
+                bg=self.theme['surface'],
+                fg=self.theme['task_fg'],
+                selectcolor=self.theme['surface'],
+                activebackground=self.theme['surface_alt']
+            )
+            self.gaming_features_checkbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            self.widgets.append(('checkbutton', self.gaming_features_checkbox))
+            self.widget_fonts[self.gaming_features_checkbox] = task_font
+            gaming_features_indicator = tk.Label(gaming_features_frame, text="🛡️", font=('Segoe UI', 9), bg=self.theme['surface'], fg=self.theme['admin_indicator'])
+            gaming_features_indicator.pack(side=tk.RIGHT, padx=5)
+            Tooltip(self.gaming_features_checkbox, "Turns OFF: Game Bar overlay, Game DVR recording, Game Mode optimizations, Background recording, Xbox Game Monitoring. May improve performance on non-gaming PCs.", self.theme)
+
             # Note label
+
+
             note_font = ('Segoe UI', 8, 'italic')
             self.note_label = tk.Label(
                 self.additional_task_frame,
@@ -4134,6 +4899,25 @@ class SystemCleanerGUI:
             self.widgets.append(('button', self.exit_button))
             self.widget_fonts[self.exit_button] = exit_button_font
 
+            # Install Needed Apps Button
+            install_apps_button_font = ('Segoe UI', 11)
+            self.install_apps_button = tk.Button(
+                button_frame,
+                text=" 📦 INSTALL APPS ",
+                font=install_apps_button_font,
+                command=self.open_install_apps_window,
+                bg=self.theme['primary'],
+                fg=self.theme['button_fg'],
+                activebackground=self.theme['select_bg'],
+                bd=0,
+                padx=25,
+                pady=12,
+                cursor="hand2"
+            )
+            self.install_apps_button.pack(side=tk.LEFT, padx=(15, 0))
+            self.widgets.append(('button', self.install_apps_button))
+            self.widget_fonts[self.install_apps_button] = install_apps_button_font
+
             # Progress section (Integrated look)
             self.progress_section = tk.Frame(self.main_container, bg=self.theme['bg'])
             self.widgets.append(('frame', self.progress_section))
@@ -4198,7 +4982,7 @@ class SystemCleanerGUI:
                 self.log_frame,
                 wrap=tk.WORD,
                 font=log_area_font,
-                height=25,
+                height=35,
                 padx=10,
                 pady=10,
                 bg=self.theme['surface'],
@@ -4232,6 +5016,9 @@ class SystemCleanerGUI:
             )
 
             self.update_all_fonts()
+
+            # Start queue processing immediately to capture all background task logs
+            self.root.after(100, self.process_queue)
 
         except Exception as e:
             raise
@@ -4346,6 +5133,14 @@ class SystemCleanerGUI:
             tasks.append("stop_background_apps")
         if self.disable_startup_apps_var.get():
             tasks.append("disable_startup_apps")
+        if self.oo_shutup10.get():
+            tasks.append("oo_shutup10")
+        if self.edge_performance.get():
+            tasks.append("edge_performance")
+        if self.disable_gaming_features.get():
+            tasks.append("disable_gaming_features")
+        if self.adjust_virtual_memory.get():
+            tasks.append("adjust_virtual_memory")
 
         if not tasks:
             self.log_message("No tasks selected!")
@@ -4359,10 +5154,40 @@ class SystemCleanerGUI:
         self.log_message("Starting selected tasks...")
         threading.Thread(target=self.execute_tasks, args=(tasks,), daemon=True).start()
 
-        # Start queue processing
-        self.root.after(100, self.process_queue)
+    def reset_all_checkboxes(self):
+        """Reset all task checkboxes to unchecked state after tasks complete"""
+        # Core System Tasks
+        self.clean_temp.set(False)
+        self.disk_cleanup.set(False)
+        self.disable_fast_startup.set(False)
+        self.repair_system.set(False)
+        self.chk_dsk.set(False)
+        self.windows_updates.set(False)
+        
+        # App Settings
+        self.stop_background_apps_var.set(False)
+        self.disable_startup_apps_var.set(False)
+        self.update_apps.set(False)
+        
+        # Additional Tasks
+        self.windows_adjustments.set(False)
+        self.flush_dns.set(False)
+        self.ipconfig_all.set(False)
+        self.change_dns.set(False)
+        self.autopilot_csv.set(False)
+        self.pc_report.set(False)
+        self.chris_titus_utility.set(False)
+        self.storage_sence.set(False)
+        self.device_firmware.set(False)
+        self.oo_shutup10.set(False)
+        self.edge_performance.set(False)
+        self.disable_gaming_features.set(False)
+        self.adjust_virtual_memory.set(False)
+        
+        self.log_message("All task checkboxes have been reset.")
 
     def execute_tasks(self, tasks):
+
         if not self.admin_status:
             self.queue.put("ERROR: Administrator privileges required!")
             self.queue.put("Please restart the application as administrator.")
@@ -4390,7 +5215,11 @@ class SystemCleanerGUI:
                     "chris_titus_utility": "Chris Titus Windows Utility",
                     "storage_sence": "StorageSence (Advanced Drive Scanner)",
                     "stop_background_apps": "Stop Background Apps",
-                    "disable_startup_apps": "Disable Startup Apps"
+                    "disable_startup_apps": "Disable Startup Apps",
+                    "oo_shutup10": "O&O ShutUp10 Privacy Tool",
+                    "edge_performance": "Edge Performance Adjustments",
+                    "disable_gaming_features": "Turn Off All Gaming Features",
+                    "adjust_virtual_memory": "Optimize Virtual Memory"
                 }
 
                 display_name = task_display_names.get(task, task)
@@ -4432,6 +5261,14 @@ class SystemCleanerGUI:
                     self.stop_background_apps()
                 elif task == "disable_startup_apps":
                     self.disable_startup_apps()
+                elif task == "oo_shutup10":
+                    self.run_oo_shutup10()
+                elif task == "edge_performance":
+                    self.apply_edge_performance_adjustments()
+                elif task == "disable_gaming_features":
+                    self.disable_all_gaming_features()
+                elif task == "adjust_virtual_memory":
+                    self.optimize_virtual_memory()
 
                 self.queue.put(f"TASK_END:{task}")
             except Exception as e:
@@ -4441,6 +5278,28 @@ class SystemCleanerGUI:
         self.queue.put("TASKS_COMPLETE")
 
     def process_queue(self):
+        task_display_names = {
+            "clean_temp": "Clean Temp Files",
+            "disk_cleanup": "Disk Cleanup",
+            "disable_fast_startup": "Disable Fast Startup",
+            "update_apps": "Update Apps",
+            "windows_updates": "Windows Updates",
+            "device_firmware": "Device Firmware Updates",
+            "repair_system": "Repair System",
+            "chk_dsk": "Check Disk",
+            "windows_adjustments": "Windows Adjustments",
+            "flush_dns": "Flush DNS and Renew IP",
+            "ipconfig_all": "Display IP Configuration",
+            "change_dns": "Change DNS to 1.1.1.1 and 8.8.8.8",
+            "autopilot_csv": "AutoPilot CSV Creation",
+            "pc_report": "PC Report",
+            "chris_titus_utility": "Chris Titus Windows Utility",
+            "storage_sence": "StorageSence",
+            "stop_background_apps": "Stop Background Apps",
+            "disable_startup_apps": "Disable Startup Apps",
+            "app_installer": "App Installer"
+        }
+
         try:
             while True:
                 msg = self.queue.get_nowait()
@@ -4450,7 +5309,7 @@ class SystemCleanerGUI:
                     parts = msg.split(":", 2)
                     if len(parts) >= 3:
                         task_id = parts[1]
-                        display_name = parts[2]
+                        display_name = task_display_names.get(task_id, parts[2])
                         self.log_message(f"Starting task: {display_name}", display_name)
                         self.update_progress_info(display_name, "0%")
 
@@ -4458,42 +5317,21 @@ class SystemCleanerGUI:
                 elif msg.startswith("PROGRESS:"):
                     parts = msg.split(":", 2)
                     if len(parts) >= 3:
-                        task_name = parts[1]
+                        task_id = parts[1]
                         progress_info = parts[2]
+                        display_name = task_display_names.get(task_id, task_id)
 
                         # Extract progress percentage if available
                         progress_match = re.search(r'(\d+)%', progress_info)
                         if progress_match:
                             progress = progress_match.group(1)
-                            self.update_progress_info(task_name, f"{progress}%")
+                            self.update_progress_info(display_name, f"{progress}%")
 
-                        self.log_message(progress_info, task_name)
+                        self.log_message(progress_info, display_name)
 
                 # Handle task end
                 elif msg.startswith("TASK_END:"):
                     task_id = msg.split(":", 1)[1]
-                    # Find the display name for this task
-                    task_display_names = {
-                        "clean_temp": "Clean Temp Files",
-                        "disk_cleanup": "Disk Cleanup",
-                        "disable_fast_startup": "Disable Fast Startup",
-                        "update_apps": "Update Apps",
-                        "windows_updates": "Windows Updates",
-                        "device_firmware": "Device Firmware Updates",
-                        "repair_system": "Repair System",
-                        "chk_dsk": "Check Disk",
-                        "windows_adjustments": "Windows Adjustments",
-                        "flush_dns": "Flush DNS and Renew IP",
-                        "ipconfig_all": "Display IP Configuration",
-                        "change_dns": "Change DNS to 1.1.1.1 and 8.8.8.8",
-                        "autopilot_csv": "AutoPilot CSV Creation",
-                        "pc_report": "PC Report",
-                        "chris_titus_utility": "Chris Titus Windows Utility",
-                        "storage_sence": "StorageSence",
-                        "stop_background_apps": "Stop Background Apps",
-                        "disable_startup_apps": "Disable Startup Apps"
-                    }
-
                     display_name = task_display_names.get(task_id, task_id)
                     self.log_message(f"Task completed: {display_name}", display_name)
                     self.update_progress_info(display_name, "100%")
@@ -4508,6 +5346,7 @@ class SystemCleanerGUI:
                     self.show_progress(False)
                     self.update_progress_info("None", "")
                     self.log_message("Tasks finished successfully!")
+                    self.reset_all_checkboxes()  # Auto-uncheck all checkboxes
                 elif msg == "TASKS_FAILED":
                     self.run_button.config(state=tk.NORMAL)
                     self.show_progress(False)
@@ -6036,38 +6875,48 @@ Get-AutoPilotInfo -OutputFile "C:\\PowerShell\\AutoPilot.csv"
             self.queue.put(f"PROGRESS:Stop Background Apps:Error stopping background apps: {str(e)}")
 
     def disable_startup_apps(self):
-        """Disable startup applications except OneDrive"""
+        """Disable startup applications except OneDrive (using StartupApproved registry - does NOT remove entries)"""
         self.queue.put("PROGRESS:Disable Startup Apps:Disabling startup apps (except OneDrive)...")
         try:
-            # Safe PowerShell script to disable startup apps
+            # Fixed PowerShell script that DISABLES instead of REMOVES startup entries
+            # Uses the StartupApproved registry which is how Windows Task Manager disables items
             ps_script = '''
             try {
                 $disabledCount = 0
-
-                # Check registry startup items
-                $regPath = "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
-
-                if (Test-Path $regPath) {
-                    $regItems = Get-ItemProperty -Path $regPath
-
-                    foreach ($prop in $regItems.PSObject.Properties) {
+                
+                # Get startup items from Run key
+                $runPath = "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+                $approvedPath = "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run"
+                
+                # Ensure StartupApproved\\Run exists
+                if (-not (Test-Path $approvedPath)) {
+                    New-Item -Path $approvedPath -Force | Out-Null
+                }
+                
+                if (Test-Path $runPath) {
+                    $runItems = Get-ItemProperty -Path $runPath
+                    
+                    foreach ($prop in $runItems.PSObject.Properties) {
                         if ($prop.Name -notlike "PS*" -and $prop.Name -notlike "*OneDrive*") {
                             try {
-                                Remove-ItemProperty -Path $regPath -Name $prop.Name -Force
+                                # Create a disabled value (first byte = 03 means disabled)
+                                # Format: 03 00 00 00 00 00 00 00 00 00 00 00
+                                $disabledValue = [byte[]](0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+                                Set-ItemProperty -Path $approvedPath -Name $prop.Name -Value $disabledValue -Type Binary -Force
                                 Write-Host "Disabled startup item: $($prop.Name)"
                                 $disabledCount++
                             } catch {
-                                Write-Warning "Could not disable: $($prop.Name)"
+                                Write-Warning "Could not disable: $($prop.Name) - $($_.Exception.Message)"
                             }
                         } elseif ($prop.Name -like "*OneDrive*") {
                             Write-Host "Skipped OneDrive: $($prop.Name)"
                         }
                     }
                 }
-
-                Write-Host "Startup apps disabled successfully"
+                
+                Write-Host "Startup apps disabled successfully (entries preserved, can be re-enabled)"
                 Write-Host "Total disabled items: $disabledCount"
-
+                
             } catch {
                 Write-Error "Error disabling startup apps: $($_.Exception.Message)"
             }
@@ -6100,7 +6949,361 @@ Get-AutoPilotInfo -OutputFile "C:\\PowerShell\\AutoPilot.csv"
         except Exception as e:
             self.queue.put(f"PROGRESS:Disable Startup Apps:Error disabling startup apps: {str(e)}")
 
+    def run_oo_shutup10(self):
+        """Download and run O&O ShutUp10 privacy tool"""
+        self.queue.put("PROGRESS:O&O ShutUp10:Starting O&O ShutUp10 download...")
+        try:
+            import tempfile
+            
+            # Download using PowerShell to avoid SSL certificate issues
+            temp_dir = tempfile.gettempdir()
+            exe_path = os.path.join(temp_dir, "OOSU10.exe")
+            download_url = "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe"
+            
+            self.queue.put("PROGRESS:O&O ShutUp10:Downloading from official O&O Software site...")
+            
+            # Use PowerShell to download (bypasses Python SSL issues)
+            ps_script = f'''
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            $ProgressPreference = 'SilentlyContinue'
+            try {{
+                Invoke-WebRequest -Uri '{download_url}' -OutFile '{exe_path}' -UseBasicParsing
+                Write-Host "Download successful"
+            }} catch {{
+                Write-Error "Download failed: $($_.Exception.Message)"
+                exit 1
+            }}
+            '''
+            
+            result = subprocess.run(
+                ['powershell', '-Command', ps_script],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=120,
+                creationflags=CREATE_NO_WINDOW
+            )
+            
+            if result.returncode != 0 or not os.path.exists(exe_path):
+                self.queue.put(f"PROGRESS:O&O ShutUp10:Download failed: {result.stderr.strip()}")
+                return
+            
+            self.queue.put("PROGRESS:O&O ShutUp10:Download complete. Launching O&O ShutUp10...")
+            
+            # Run the executable (without CREATE_NO_WINDOW so user can see the GUI)
+            subprocess.Popen([exe_path])
+            
+            self.queue.put("PROGRESS:O&O ShutUp10:O&O ShutUp10 launched successfully!")
+            self.queue.put("PROGRESS:O&O ShutUp10:Note: Apply your preferred privacy settings in the O&O ShutUp10 window.")
+            
+        except Exception as e:
+            self.queue.put(f"PROGRESS:O&O ShutUp10:Error running O&O ShutUp10: {str(e)}")
+
+
+    def apply_edge_performance_adjustments(self):
+        """Disable Edge startup boost, background apps, and change search engine to Google"""
+        self.queue.put("PROGRESS:Edge Performance:Applying Edge performance adjustments...")
+        try:
+            ps_script = '''
+            try {
+                $edgePolicyPath = "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Edge"
+                
+                # Create Edge policy path if it doesn't exist
+                if (-not (Test-Path $edgePolicyPath)) {
+                    New-Item -Path $edgePolicyPath -Force | Out-Null
+                    Write-Host "Created Edge policy registry path"
+                }
+                
+                # Disable Startup Boost
+                Set-ItemProperty -Path $edgePolicyPath -Name "StartupBoostEnabled" -Value 0 -Type DWord -Force
+                Write-Host "Disabled Edge Startup Boost"
+                
+                # Disable Background Mode (continue running background extensions and apps when Edge is closed)
+                Set-ItemProperty -Path $edgePolicyPath -Name "BackgroundModeEnabled" -Value 0 -Type DWord -Force
+                Write-Host "Disabled Edge Background Mode"
+                
+                # Try to set Google as default search engine via Edge preferences
+                $edgePrefsPath = "$env:LOCALAPPDATA\\Microsoft\\Edge\\User Data\\Default\\Preferences"
+                if (Test-Path $edgePrefsPath) {
+                    try {
+                        $prefs = Get-Content $edgePrefsPath -Raw | ConvertFrom-Json
+                        # Note: Changing search engine via preferences is complex due to encryption
+                        # Using policy-based approach instead
+                        Write-Host "Edge preferences file found"
+                    } catch {
+                        Write-Host "Could not modify Edge preferences directly"
+                    }
+                }
+                
+                # Set default search provider via policy (more reliable)
+                Set-ItemProperty -Path $edgePolicyPath -Name "DefaultSearchProviderEnabled" -Value 1 -Type DWord -Force
+                Set-ItemProperty -Path $edgePolicyPath -Name "DefaultSearchProviderName" -Value "Google" -Type String -Force
+                Set-ItemProperty -Path $edgePolicyPath -Name "DefaultSearchProviderSearchURL" -Value "https://www.google.com/search?q={searchTerms}" -Type String -Force
+                Set-ItemProperty -Path $edgePolicyPath -Name "DefaultSearchProviderSuggestURL" -Value "https://www.google.com/complete/search?q={searchTerms}&output=chrome" -Type String -Force
+                Write-Host "Set default search engine to Google"
+                
+                Write-Host "Edge performance adjustments applied successfully!"
+                Write-Host "Note: Restart Edge for changes to take effect."
+                
+            } catch {
+                Write-Error "Error applying Edge adjustments: $($_.Exception.Message)"
+            }
+            '''
+
+            self.queue.put("PROGRESS:Edge Performance:Executing Edge optimization script...")
+            result = subprocess.run(
+                ['powershell', '-Command', ps_script],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=60,
+                creationflags=CREATE_NO_WINDOW
+            )
+
+            if result.stdout.strip():
+                self.queue.put("PROGRESS:Edge Performance:Script output:")
+                for line in result.stdout.strip().split('\n'):
+                    if line.strip():
+                        self.queue.put(f"PROGRESS:Edge Performance:  {line.strip()}")
+
+            if result.stderr.strip():
+                self.queue.put("PROGRESS:Edge Performance:Script errors:")
+                for line in result.stderr.strip().split('\n'):
+                    if line.strip():
+                        self.queue.put(f"PROGRESS:Edge Performance:  {line.strip()}")
+
+        except subprocess.TimeoutExpired:
+            self.queue.put("PROGRESS:Edge Performance:Edge adjustments operation timed out")
+        except Exception as e:
+            self.queue.put(f"PROGRESS:Edge Performance:Error applying Edge adjustments: {str(e)}")
+
+    def disable_all_gaming_features(self):
+        """Turn off all Windows gaming features: Game Bar, Game DVR, Game Mode, and captures"""
+        self.queue.put("PROGRESS:Gaming Features:Disabling all Windows gaming features...")
+        try:
+            ps_script = '''
+            try {
+                Write-Host "=== Disabling Windows Gaming Features ==="
+                
+                # Disable Game Bar
+                Write-Host "Disabling Game Bar..."
+                $gamingPath = "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR"
+                if (-not (Test-Path $gamingPath)) { New-Item -Path $gamingPath -Force | Out-Null }
+                Set-ItemProperty -Path $gamingPath -Name "AppCaptureEnabled" -Value 0 -Type DWord -Force
+                Write-Host "  - Game Bar capture disabled"
+                
+                $gameBarPath = "HKCU:\\Software\\Microsoft\\GameBar"
+                if (-not (Test-Path $gameBarPath)) { New-Item -Path $gameBarPath -Force | Out-Null }
+                Set-ItemProperty -Path $gameBarPath -Name "UseNexusForGameBarEnabled" -Value 0 -Type DWord -Force
+                Set-ItemProperty -Path $gameBarPath -Name "AutoGameModeEnabled" -Value 0 -Type DWord -Force
+                Write-Host "  - Game Bar overlay disabled"
+                
+                # Disable Game DVR
+                Write-Host "Disabling Game DVR..."
+                $gameDVRPolicy = "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR"
+                if (-not (Test-Path $gameDVRPolicy)) { New-Item -Path $gameDVRPolicy -Force | Out-Null }
+                Set-ItemProperty -Path $gameDVRPolicy -Name "AllowGameDVR" -Value 0 -Type DWord -Force
+                Write-Host "  - Game DVR recording disabled"
+                
+                # Disable Game Mode
+                Write-Host "Disabling Game Mode..."
+                $gameModePath = "HKCU:\\Software\\Microsoft\\GameBar"
+                Set-ItemProperty -Path $gameModePath -Name "AllowAutoGameMode" -Value 0 -Type DWord -Force
+                Write-Host "  - Auto Game Mode disabled"
+                
+                $gameConfigPath = "HKCU:\\System\\GameConfigStore"
+                if (-not (Test-Path $gameConfigPath)) { New-Item -Path $gameConfigPath -Force | Out-Null }
+                Set-ItemProperty -Path $gameConfigPath -Name "GameDVR_Enabled" -Value 0 -Type DWord -Force
+                Set-ItemProperty -Path $gameConfigPath -Name "GameDVR_FSEBehaviorMode" -Value 2 -Type DWord -Force
+                Set-ItemProperty -Path $gameConfigPath -Name "GameDVR_HonorUserFSEBehaviorMode" -Value 1 -Type DWord -Force
+                Set-ItemProperty -Path $gameConfigPath -Name "GameDVR_DXGIHonorFSEWindowsCompatible" -Value 1 -Type DWord -Force
+                Set-ItemProperty -Path $gameConfigPath -Name "GameDVR_EFSEFeatureFlags" -Value 0 -Type DWord -Force
+                Write-Host "  - Game optimizations disabled"
+                
+                # Disable Game Capture features
+                Write-Host "Disabling Game Capture..."
+                Set-ItemProperty -Path $gamingPath -Name "HistoricalCaptureEnabled" -Value 0 -Type DWord -Force
+                Write-Host "  - Background recording disabled"
+                
+                # Disable "Use Game Bar for supported controllers" (Guide button)
+                Write-Host "Disabling Game Bar controller guide button..."
+                Set-ItemProperty -Path $gameBarPath -Name "ShowStartupPanel" -Value 0 -Type DWord -Force
+                Set-ItemProperty -Path $gameBarPath -Name "GamePanelStartupTipIndex" -Value 3 -Type DWord -Force
+                Write-Host "  - Game Bar guide button disabled"
+                
+                # Disable optimizations for windowed games
+                Write-Host "Disabling optimizations for windowed games..."
+                Set-ItemProperty -Path $gameConfigPath -Name "GameDVR_DSEBehavior" -Value 2 -Type DWord -Force
+                $graphicsPath = "HKCU:\\Software\\Microsoft\\DirectX\\UserGpuPreferences"
+                if (-not (Test-Path $graphicsPath)) { New-Item -Path $graphicsPath -Force | Out-Null }
+                # Disable Hardware-accelerated GPU scheduling effect on windowed games
+                $fullscreenOptPath = "HKCU:\\System\\GameConfigStore"
+                Set-ItemProperty -Path $fullscreenOptPath -Name "GameDVR_FSEBehavior" -Value 2 -Type DWord -Force
+                Write-Host "  - Windowed games optimizations disabled"
+                
+                # Disable Xbox Game Monitoring
+                Write-Host "Disabling Xbox Game Monitoring..."
+                $xboxPath = "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\xbgm"
+                if (Test-Path $xboxPath) {
+                    Set-ItemProperty -Path $xboxPath -Name "Start" -Value 4 -Type DWord -Force
+                    Write-Host "  - Xbox Game Monitoring service disabled"
+                }
+                
+                Write-Host ""
+                Write-Host "=== All gaming features have been disabled! ==="
+                Write-Host "Disabled: Game Bar, Game DVR, Game Mode, Background Recording,"
+                Write-Host "          Controller Guide Button, Windowed Games Optimizations"
+                Write-Host "Note: Some changes may require a restart to take effect."
+                
+            } catch {
+                Write-Error "Error disabling gaming features: $($_.Exception.Message)"
+            }
+            '''
+
+            self.queue.put("PROGRESS:Gaming Features:Executing gaming features disable script...")
+            result = subprocess.run(
+                ['powershell', '-Command', ps_script],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=60,
+                creationflags=CREATE_NO_WINDOW
+            )
+
+            if result.stdout.strip():
+                self.queue.put("PROGRESS:Gaming Features:Script output:")
+                for line in result.stdout.strip().split('\n'):
+                    if line.strip():
+                        self.queue.put(f"PROGRESS:Gaming Features:  {line.strip()}")
+
+            if result.stderr.strip():
+                self.queue.put("PROGRESS:Gaming Features:Script errors:")
+                for line in result.stderr.strip().split('\n'):
+                    if line.strip():
+                        self.queue.put(f"PROGRESS:Gaming Features:  {line.strip()}")
+
+        except subprocess.TimeoutExpired:
+            self.queue.put("PROGRESS:Gaming Features:Operation timed out")
+        except Exception as e:
+            self.queue.put(f"PROGRESS:Gaming Features:Error disabling gaming features: {str(e)}")
+
+    def optimize_virtual_memory(self):
+        """Set virtual memory (page file) to optimal size based on installed RAM"""
+        self.queue.put("PROGRESS:Virtual Memory:Analyzing system RAM and optimizing virtual memory...")
+        try:
+            ps_script = '''
+            try {
+                # Get system RAM
+                $computerInfo = Get-CimInstance -ClassName Win32_ComputerSystem
+                $ramBytes = $computerInfo.TotalPhysicalMemory
+                $ramGB = [math]::Round($ramBytes / 1GB, 2)
+                $ramMB = [math]::Round($ramBytes / 1MB)
+                
+                Write-Host "=== System Memory Analysis ==="
+                Write-Host "Installed RAM: $ramGB GB ($ramMB MB)"
+                
+                # Calculate optimal page file size (Initial = RAM, Maximum = 2x RAM)
+                $initialSizeMB = $ramMB
+                $maxSizeMB = $ramMB * 2
+                
+                # Cap at reasonable values (max 32GB for page file)
+                if ($maxSizeMB -gt 32768) { $maxSizeMB = 32768 }
+                if ($initialSizeMB -gt 16384) { $initialSizeMB = 16384 }
+                
+                Write-Host ""
+                Write-Host "=== Recommended Virtual Memory Settings ==="
+                Write-Host "Initial Size: $initialSizeMB MB"
+                Write-Host "Maximum Size: $maxSizeMB MB"
+                Write-Host "(Formula: Initial = RAM, Maximum = 2x RAM, capped at 32GB)"
+                
+                # Get current page file info
+                Write-Host ""
+                Write-Host "=== Current Configuration ==="
+                $currentPF = Get-CimInstance -ClassName Win32_PageFileUsage -ErrorAction SilentlyContinue
+                if ($currentPF) {
+                    Write-Host "Current page file: $($currentPF.Name)"
+                    Write-Host "Current size: $($currentPF.AllocatedBaseSize) MB"
+                } else {
+                    Write-Host "No page file currently active or system managed"
+                }
+                
+                Write-Host ""
+                Write-Host "=== Applying Custom Settings ==="
+                
+                # Step 1: Disable automatic management
+                $cs = Get-WmiObject -Class Win32_ComputerSystem -EnableAllPrivileges
+                if ($cs.AutomaticManagedPagefile -eq $true) {
+                    $cs.AutomaticManagedPagefile = $false
+                    $oldErr = $ErrorActionPreference
+                    $ErrorActionPreference = 'Stop'
+                    try {
+                        $cs.Put() | Out-Null
+                        Write-Host "Disabled automatic page file management"
+                    } catch {
+                        Write-Host "Note: Could not disable automatic management (may need restart first)"
+                    }
+                    $ErrorActionPreference = $oldErr
+                } else {
+                    Write-Host "Automatic management already disabled"
+                }
+                
+                # Step 2: Set custom page file via registry (most reliable method)
+                $regPath = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+                
+                # Format: "C:\\pagefile.sys InitialSize MaxSize"
+                $pageFileValue = "C:\\pagefile.sys $initialSizeMB $maxSizeMB"
+                
+                Set-ItemProperty -Path $regPath -Name "PagingFiles" -Value @($pageFileValue) -Type MultiString -Force
+                Write-Host "Set registry: PagingFiles = $pageFileValue"
+                
+                # Verify the setting
+                $verifyPF = (Get-ItemProperty -Path $regPath -Name "PagingFiles").PagingFiles
+                Write-Host "Verified registry value: $verifyPF"
+                
+                Write-Host ""
+                Write-Host "=== Virtual Memory Optimization Complete! ==="
+                Write-Host "Custom page file configured:"
+                Write-Host "  Drive: C:\\"
+                Write-Host "  Initial Size: $initialSizeMB MB"
+                Write-Host "  Maximum Size: $maxSizeMB MB"
+                Write-Host ""
+                Write-Host "IMPORTANT: Restart your computer for changes to take effect!"
+                
+            } catch {
+                Write-Error "Error optimizing virtual memory: $($_.Exception.Message)"
+            }
+            '''
+
+
+            self.queue.put("PROGRESS:Virtual Memory:Executing virtual memory optimization script...")
+            result = subprocess.run(
+                ['powershell', '-Command', ps_script],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=60,
+                creationflags=CREATE_NO_WINDOW
+            )
+
+            if result.stdout.strip():
+                self.queue.put("PROGRESS:Virtual Memory:Script output:")
+                for line in result.stdout.strip().split('\n'):
+                    if line.strip():
+                        self.queue.put(f"PROGRESS:Virtual Memory:  {line.strip()}")
+
+            if result.stderr.strip():
+                self.queue.put("PROGRESS:Virtual Memory:Script errors:")
+                for line in result.stderr.strip().split('\n'):
+                    if line.strip():
+                        self.queue.put(f"PROGRESS:Virtual Memory:  {line.strip()}")
+
+        except subprocess.TimeoutExpired:
+            self.queue.put("PROGRESS:Virtual Memory:Operation timed out")
+        except Exception as e:
+            self.queue.put(f"PROGRESS:Virtual Memory:Error optimizing virtual memory: {str(e)}")
+
     def update_installed_apps(self):
+
         """Update installed applications using Windows Package Manager (winget)"""
         self.queue.put("PROGRESS:Update Apps:Starting application update process...")
         try:
@@ -6249,8 +7452,418 @@ Get-AutoPilotInfo -OutputFile "C:\\PowerShell\\AutoPilot.csv"
             self.queue.put("PROGRESS:CHKDSK:User chose not to reboot now.")
             self.queue.put("PROGRESS:CHKDSK:CHKDSK will run on the next manual reboot.")
 
+    def open_install_apps_window(self):
+        """Open a professional dialog to search and install apps from the winutil database"""
+        # Diagnostic: Check database status
+        try:
+            db_size = len(INSTALLABLE_APPS)
+            categories = get_categories()
+            print(f"DEBUG: App Installer database size: {db_size}")
+            print(f"DEBUG: Categories found: {len(categories)}")
+        except Exception as e:
+            print(f"DEBUG: Error accessing app database: {str(e)}")
+            messagebox.showerror("Database Error",
+                                 "Could not access the application internal database. Please report this error.")
+            return
+
+        installer_win = tk.Toplevel(self.root)
+        installer_win.title("Windows System Cleaner - App Installer")
+        installer_win.geometry("1100x820")
+        installer_win.configure(bg=self.theme['bg'])
+        installer_win.transient(self.root)
+        installer_win.grab_set()
+
+        # Center the window
+        installer_win.update_idletasks()
+        width = installer_win.winfo_width()
+        height = installer_win.winfo_height()
+        x = (installer_win.winfo_screenwidth() // 2) - (width // 2)
+        y = (installer_win.winfo_screenheight() // 2) - (height // 2)
+        installer_win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+
+        # Main Header
+        header_frame = tk.Frame(installer_win, bg=self.theme['primary'], height=70)
+        header_frame.pack(fill=tk.X)
+        header_frame.pack_propagate(False)
+
+        header_label = tk.Label(
+            header_frame,
+            text=" 📦 WINDOWS SYSTEM CLEANER - APP INSTALLER ",
+            font=('Segoe UI', 18, 'bold'),
+            bg=self.theme['primary'],
+            fg=self.theme['button_fg']
+        )
+        header_label.pack(side=tk.LEFT, padx=30, pady=15)
+
+        # Search and Selection Summary Frame
+        top_bar = tk.Frame(installer_win, bg=self.theme['surface'], height=60)
+        top_bar.pack(fill=tk.X, padx=20, pady=15)
+
+        search_label = tk.Label(top_bar, text="Search Apps:", font=('Segoe UI', 10), bg=self.theme['surface'],
+                                fg=self.theme['label_fg'])
+        search_label.pack(side=tk.LEFT, padx=(10, 5))
+
+        search_var = tk.StringVar()
+        search_entry = tk.Entry(
+            top_bar,
+            textvariable=search_var,
+            font=('Segoe UI', 11),
+            bg=self.theme['entry_bg'],
+            fg=self.theme['entry_fg'],
+            insertbackground=self.theme['primary'],
+            bd=0,
+            highlightthickness=1,
+            highlightbackground=self.theme['surface_alt']
+        )
+        search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=10, pady=10)
+        search_entry.focus_set()
+
+        selection_label = tk.Label(top_bar, text="Apps: 0/0", font=('Segoe UI', 10, 'bold'),
+                                   bg=self.theme['surface'], fg=self.theme['primary'])
+        selection_label.pack(side=tk.RIGHT, padx=20)
+
+        diagnostic_label = tk.Label(top_bar, text="Status: Ready", font=('Segoe UI', 9),
+                                    bg=self.theme['surface'], fg=self.theme['label_fg_dim'])
+        diagnostic_label.pack(side=tk.RIGHT, padx=10)
+
+        # Content Area with Sidebar and App Grid
+        content_frame = tk.Frame(installer_win, bg=self.theme['bg'])
+        content_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=(0, 20))
+
+        # Sidebar for Categories
+        sidebar = tk.Frame(content_frame, bg=self.theme['surface'], width=220)
+        sidebar.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 15))
+        sidebar.pack_propagate(False)
+
+        sidebar_header = tk.Label(sidebar, text="CATEGORIES", font=('Segoe UI', 9, 'bold'), bg=self.theme['surface'],
+                                  fg=self.theme['label_fg_dim'], pady=10)
+        sidebar_header.pack(fill=tk.X)
+
+        # Scroll wheel scroll handling to prevent background bleed
+        def _on_mousewheel(event, canvas):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+            return "break"
+
+        def bind_scroll(widget, canvas):
+            widget.bind("<MouseWheel>", lambda e: _on_mousewheel(e, canvas))
+
+        # Scrollable categories list
+        cat_canvas = tk.Canvas(sidebar, bg=self.theme['surface'], highlightthickness=0)
+        cat_scrollbar = ttk.Scrollbar(sidebar, orient="vertical", command=cat_canvas.yview)
+        cat_scrollable_frame = tk.Frame(cat_canvas, bg=self.theme['surface'])
+
+        cat_scrollable_frame.bind(
+            "<Configure>",
+            lambda e: cat_canvas.configure(scrollregion=cat_canvas.bbox("all"))
+        )
+
+        cat_canvas.create_window((0, 0), window=cat_scrollable_frame, anchor="nw", width=220)
+        cat_canvas.configure(yscrollcommand=cat_scrollbar.set)
+        
+        # Bind sidebar to scroll
+        cat_canvas.bind("<MouseWheel>", lambda e: _on_mousewheel(e, cat_canvas))
+        cat_scrollable_frame.bind("<MouseWheel>", lambda e: _on_mousewheel(e, cat_canvas))
+
+        cat_canvas.pack(side="left", fill="both", expand=True)
+        cat_scrollbar.pack(side="right", fill="y")
+
+        # Main Apps Grid Area (Scrollable)
+        apps_container = tk.Frame(content_frame, bg=self.theme['surface'], bd=0)
+        apps_container.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
+        app_canvas = tk.Canvas(apps_container, bg=self.theme['surface'], highlightthickness=0)
+        app_scrollbar = ttk.Scrollbar(apps_container, orient="vertical", command=app_canvas.yview)
+        app_grid_frame = tk.Frame(app_canvas, bg=self.theme['surface'])
+
+        app_canvas.bind("<MouseWheel>", lambda e: _on_mousewheel(e, app_canvas))
+        app_grid_frame.bind("<MouseWheel>", lambda e: _on_mousewheel(e, app_canvas))
+
+        app_grid_frame.bind(
+            "<Configure>",
+            lambda e: app_canvas.configure(scrollregion=app_canvas.bbox("all"))
+        )
+
+        # Ensure the grid frame stays as wide as the canvas
+        def sync_width(event):
+            app_canvas.itemconfig(grid_window, width=event.width)
+
+        grid_window = app_canvas.create_window((0, 0), window=app_grid_frame, anchor="nw")
+        app_canvas.bind("<Configure>", sync_width)
+        app_canvas.configure(yscrollcommand=app_scrollbar.set)
+
+        app_canvas.pack(side="left", fill="both", expand=True)
+        app_scrollbar.pack(side="right", fill="y")
+
+        # Variables for app selection
+        app_vars = {}
+        app_widgets = {}
+
+        def update_selection_count(*args):
+            count = sum(1 for var in app_vars.values() if var.get())
+            diagnostic_label.config(text=f"Selected: {count} | Total: {len(INSTALLABLE_APPS)}")
+            if count > 0:
+                install_btn.config(state=tk.NORMAL, bg=self.theme['primary'], fg=self.theme['button_fg'])
+            else:
+                install_btn.config(state=tk.DISABLED, bg=self.theme['surface_alt'], fg=self.theme['label_fg_dim'])
+
+        def apply_filter(*args):
+            query = search_var.get().lower()
+            current_cat = active_cat_var.get()
+
+            # Hide all widgets first
+            for widget in app_widgets.values():
+                widget.grid_forget()
+
+            row = 0
+            col = 0
+            cols = 3  # Fixed columns for the grid
+
+            visible_count = 0
+            for app_name, app_data in INSTALLABLE_APPS.items():
+                match_query = query in app_name.lower() or query in app_data['description'].lower()
+                match_cat = current_cat == "All Apps" or app_data['category'] == current_cat
+
+                if match_query and match_cat:
+                    if app_name in app_widgets:
+                        widget = app_widgets[app_name]
+                        widget.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")
+                        col += 1
+                        if col >= cols:
+                            col = 0
+                            row += 1
+                        visible_count += 1
+
+            # Configure grid weights for uniform spacing
+            for i in range(cols):
+                app_grid_frame.grid_columnconfigure(i, weight=1)
+
+            # Force update and scrollregion sync
+            selection_label.config(text=f"Visible: {visible_count}/{len(INSTALLABLE_APPS)}")
+            app_grid_frame.update_idletasks()
+            app_canvas.config(scrollregion=app_canvas.bbox("all"))
+            print(f"DEBUG: Apps visible after filter: {visible_count}")
+
+        # Initialize App Cards
+        creation_errors = 0
+        for app_name, app_data in INSTALLABLE_APPS.items():
+            try:
+                var = tk.BooleanVar()
+                app_vars[app_name] = var
+                var.trace_add("write", update_selection_count)
+
+                # App Card Frame
+                card = tk.Frame(app_grid_frame, bg=self.theme['surface'], bd=1, relief=tk.RIDGE, highlightthickness=1,
+                                highlightbackground=self.theme['surface_alt'])
+
+                # Checkbox + Title
+                cb = tk.Checkbutton(
+                    card,
+                    text=app_name,
+                    variable=var,
+                    font=('Segoe UI', 10, 'bold'),
+                    bg=self.theme['surface'],
+                    fg=self.theme['task_fg'],
+                    selectcolor=self.theme['surface'],
+                    activebackground=self.theme['surface_alt'],
+                    activeforeground=self.theme['primary'],
+                    anchor=tk.W,
+                    bd=0
+                )
+                cb.pack(fill=tk.X, padx=10, pady=(10, 0))
+
+                # Description
+                desc = tk.Label(
+                    card,
+                    text=app_data['description'],
+                    font=('Segoe UI', 8),
+                    bg=self.theme['surface'],
+                    fg=self.theme['label_fg_dim'],
+                    wraplength=250,
+                    justify=tk.LEFT,
+                    anchor=tk.NW,
+                    height=2
+                )
+                desc.pack(fill=tk.BOTH, expand=True, padx=12, pady=(2, 12))
+
+                app_widgets[app_name] = card
+
+                # Helper to toggle app when card is clicked
+                def make_toggle_handler(v):
+                    return lambda e: v.set(not v.get())
+
+                toggle_handler = make_toggle_handler(var)
+                card.bind("<Button-1>", toggle_handler)
+                desc.bind("<Button-1>", toggle_handler)
+                # Note: cb (Checkbutton) handles its own click
+
+                # Bind card and children to scroll to prevent background bleed
+                bind_scroll(card, app_canvas)
+                bind_scroll(cb, app_canvas)
+                bind_scroll(desc, app_canvas)
+            except Exception as e:
+                print(f"DEBUG: Failed to create card for {app_name}: {str(e)}")
+                creation_errors += 1
+
+        if creation_errors > 0:
+            diagnostic_label.config(text=f"Errors: {creation_errors} cards failed", fg="#FF0000")
+
+        # Category logic
+        active_cat_var = tk.StringVar(value="All Apps")
+        category_buttons = {}
+
+        def select_category(cat_name):
+            active_cat_var.set(cat_name)
+            for name, btn in category_buttons.items():
+                if name == cat_name:
+                    btn.config(bg=self.theme['primary'], fg=self.theme['button_fg'])
+                else:
+                    btn.config(bg=self.theme['surface'], fg=self.theme['label_fg'])
+            apply_filter()
+
+        # Add "All Apps" category
+        all_btn = tk.Button(
+            cat_scrollable_frame,
+            text=f"All Apps ({len(INSTALLABLE_APPS)})",
+            command=lambda: select_category("All Apps"),
+            font=('Segoe UI', 9, 'bold'),
+            bg=self.theme['primary'],
+            fg=self.theme['button_fg'],
+            bd=0,
+            padx=15,
+            pady=10,
+            anchor=tk.W,
+            cursor="hand2"
+        )
+        all_btn.pack(fill=tk.X)
+        category_buttons["All Apps"] = all_btn
+
+        # Add other categories
+        cat_names = get_categories()
+        cat_counts = {}
+        for app in INSTALLABLE_APPS.values():
+            cat = app['category']
+            cat_counts[cat] = cat_counts.get(cat, 0) + 1
+
+        for cat in cat_names:
+            btn = tk.Button(
+                cat_scrollable_frame,
+                text=f"{cat} ({cat_counts[cat]})",
+                command=lambda c=cat: select_category(c),
+                font=('Segoe UI', 9),
+                bg=self.theme['surface'],
+                fg=self.theme['label_fg'],
+                bd=0,
+                padx=15,
+                pady=10,
+                anchor=tk.W,
+                cursor="hand2"
+            )
+            btn.pack(fill=tk.X)
+            category_buttons[cat] = btn
+
+        # Bottom Action Bar
+        action_bar = tk.Frame(installer_win, bg=self.theme['bg'], height=100)
+        action_bar.pack(fill=tk.X, side=tk.BOTTOM, padx=20, pady=20)
+
+        def start_installation():
+            selected_apps = [name for name, var in app_vars.items() if var.get()]
+            if not selected_apps:
+                return
+
+            if messagebox.askyesno("Confirm Installation",
+                                   f"Are you sure you want to install {len(selected_apps)} application(s)?\n\nThis will use Winget to download and install the software."):
+                installer_win.destroy()
+                # Run in background via existing task system
+                threading.Thread(target=self.install_selected_apps, args=(selected_apps,), daemon=True).start()
+
+        install_btn = tk.Button(
+            action_bar,
+            text=" START BATCH INSTALLATION ",
+            font=('Segoe UI', 12, 'bold'),
+            command=start_installation,
+            bg=self.theme['surface_alt'],
+            fg=self.theme['label_fg_dim'],
+            state=tk.DISABLED,
+            bd=0,
+            padx=40,
+            pady=15,
+            cursor="hand2"
+        )
+        install_btn.pack(side=tk.RIGHT)
+
+        close_btn = tk.Button(
+            action_bar,
+            text=" CANCEL ",
+            font=('Segoe UI', 12),
+            command=installer_win.destroy,
+            bg=self.theme['button_secondary_bg'],
+            fg=self.theme['button_secondary_fg'],
+            bd=0,
+            padx=40,
+            pady=15,
+            cursor="hand2"
+        )
+        close_btn.pack(side=tk.RIGHT, padx=15)
+
+        # Connect search var to filter
+        search_var.trace_add("write", apply_filter)
+
+        # Initial display
+        apply_filter()
+
+    def install_selected_apps(self, app_list):
+        """Worker method to install apps via Winget"""
+        self.show_progress(True)
+        self.queue.put(f"TASK_START:app_installer:App Installer")
+        self.queue.put(f"PROGRESS:app_installer:Starting installation of {len(app_list)} apps...")
+        
+        success_count = 0
+        fail_count = 0
+        
+        for i, app_name in enumerate(app_list):
+            if app_name not in INSTALLABLE_APPS:
+                continue
+                
+            winget_id = INSTALLABLE_APPS[app_name]['winget']
+            self.queue.put(f"PROGRESS:app_installer:({i+1}/{len(app_list)}) Installing {app_name} [{winget_id}]...")
+            
+            try:
+                # Use winget install --silent --accept-package-agreements --accept-source-agreements
+                cmd = [
+                    'winget', 'install', '--id', winget_id, 
+                    '--silent', '--accept-package-agreements', '--accept-source-agreements'
+                ]
+                
+                result = subprocess.run(
+                    cmd, 
+                    capture_output=True, 
+                    text=True, 
+                    check=False,
+                    creationflags=CREATE_NO_WINDOW
+                )
+                
+                if result.returncode == 0:
+                    self.queue.put(f"PROGRESS:app_installer:Successfully installed {app_name}")
+                    success_count += 1
+                else:
+                    # Check for "already installed" error codes
+                    if "already installed" in result.stdout.lower() or result.returncode == 0x8A150030:
+                        self.queue.put(f"PROGRESS:app_installer:{app_name} is already installed. Skipping.")
+                        success_count += 1
+                    else:
+                        self.queue.put(f"PROGRESS:app_installer:Failed to install {app_name}. Error code: {result.returncode}")
+                        fail_count += 1
+                        
+            except Exception as e:
+                self.queue.put(f"PROGRESS:app_installer:Error installing {app_name}: {str(e)}")
+                fail_count += 1
+        
+        self.queue.put(f"PROGRESS:app_installer:Batch installation complete. Success: {success_count}, Failed: {fail_count}")
+        self.queue.put("TASK_END:app_installer")
+        self.queue.put("TASKS_COMPLETE")
 
 def parse_args():
+
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="Windows System Cleaner")
     parser.add_argument("--clean-temp", type=int, choices=[0, 1], default=0,

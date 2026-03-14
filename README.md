@@ -1,20 +1,20 @@
-# Windows System Cleaner
+# Windows-System-Cleaner
 
 [![Support on Buy Me a Coffee](https://img.shields.io/badge/Support-Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/onlycyber)
 
 A comprehensive GUI application for Windows system maintenance, optimization, and advanced drive analysis. This tool provides an easy-to-use interface for performing various system cleaning, maintenance, reporting tasks, and health monitoring.
 
-## New in Version 1.2
+## New in Version 1.3
 
--   **Rebranding**: Full transition to "Windows System Cleaner" for a professional, consistent experience.
--   **Integrated App Installer**: Over 350 popular applications available for batch installation via Winget.
--   **Fun Themes**: Support for Cyberpunk, Ocean, Sunset, and Forest themes alongside Light and Dark modes.
--   **Virtual Memory Optimizer**: Automatic RAM-to-PageFile calculation and optimization.
--   **Dynamic UI Scaling**: Adjustable font sizes across the entire application.
+- **Enhanced Layout**: Transitioned to a clean, equal-width, two-column dashboard maximizing vertical space for faster tool discovery.
+- **MiniDump Analyzer**: Seamlessly integrates NirSoft's BlueScreenView to quickly diagnose BSOD (Blue Screen of Death) crash dumps.
+- **Deep Network Stack Remediation**: A comprehensive one-click fix for complex network connection issues, resetting everything from winsock to IP configurations and flushing DNS.
+- **Sysinternals Integration**: Direct, one-click access to Microsoft's legendary Sysinternals tools—specifically **Autoruns** (startup management) and **Process Explorer** (advanced task manager).
+- **Custom Application Icon**: Added a sleek custom icon to replace the default aesthetic, visible in both the UI banner and the executable file.
 
 ## Features
 
-### App Installer (v1.2)
+### App Installer
 -   **Massive Database**: 350+ tools including Browsers, Development Environments, Multimedia, and Communications.
 -   **Categorized Browsing**: Simplified navigation with a categorized sidebar.
 -   **Integrated Search**: Quickly find the tools you need.
@@ -42,17 +42,20 @@ A comprehensive GUI application for Windows system maintenance, optimization, an
 -   **Update Services**: Update installed apps via Winget and check for Windows/Firmware updates.
 
 ### Network and Connectivity
+-   **Deep Network Stack Remediation**: Full reset of network configurations.
 -   **Flush DNS and Renew IP**: Clears DNS cache and refreshes network identity.
 -   **Detailed Network Config**: Comprehensive adapter and IP information.
 -   **Fast DNS Switcher**: One-click switch to high-performance providers like Cloudflare or Google.
 
-### Reporting and Utilities
--   **PC System Report**: Generates a detailed HTML report of hardware, software, and security status.
+### Advanced IT Diagnostic Tools
+-   **MiniDump Analyzer**: Open BSOD crash dumps using built-in BlueScreenView logic.
+-   **Sysinternals Launchers**: Directly open Autoruns and Process Explorer.
+-   **Detailed Reporting**: Generate in-depth HTML system reports covering hardware, software, and security status.
 -   **Chris Titus Utility**: Integrated launcher for the Chris Titus Tech Windows Utility.
 
 ## Personalization
 
-The application now supports several themes to match your workspace:
+The application supports dynamic UI scaling via the View menu, and multiple themes to match your workspace:
 - Light
 - Dark
 - Cyberpunk (Neon)
@@ -64,40 +67,42 @@ Switch themes instantly via the **View > Theme** menu.
 
 ## Installation
 
-### Prerequisites
+### Method 1: Standalone Executable (Recommended)
+You can simply run the compiled `Windows-System-Cleaner.exe` directly on any Windows 10/11 machine. No Python installation or dependencies are required.
+
+### Method 2: Running from Source
+**Prerequisites**
 -   **OS**: Windows 10/11 (64-bit).
 -   **Python**: Version 3.8 or higher.
--   **Privileges**: Administrator rights are required for most operations.
 
-### Dependencies
+**Dependencies**
 Install the required Python packages:
 ```bash
 pip install wmi requests beautifulsoup4 psutil customtkinter
 ```
 
-### Running the Application
-1.  Open Command Prompt or PowerShell as **Administrator**.
+**Running the Application**
+1.  Open Command Prompt or PowerShell as **Administrator** (required for system tasks).
 2.  Navigate to the application directory.
 3.  Run the main script:
     ```bash
-    python main.py
+    python Windows-System-Cleaner.py
     ```
 
 ## Usage
 
 ### The Interface
-The dashboard is split into three primary columns:
--   **Left Column (Core System Tasks)**: Essential maintenance and optimization.
--   **Center (App Settings)**: Management for apps, background services, and updates.
--   **Right Column (Additional Tasks)**: Advanced utilities, reporting, and the StorageSense launcher.
+The dashboard is split into two primary, equal-width columns to maximize vertical space:
+-   **Left Column**: Core system maintenance, optimization tasks, app settings, and update management.
+-   **Right Column**: Additional advanced tasks, network remediation, reporting functionalities, and IT diagnostic tool launchers.
 
 ### Using the App Installer
-1.  Navigate to the App Installer tab (if launched separately) or use the search bar within the UI.
-2.  Select the apps you wish to install.
+1.  Navigate to the App Installer tab or use the search bar within the UI.
+2.  Select the apps you wish to install across various categories.
 3.  Click "Install Selected" to begin the batch process.
 
 ## Security and Safety
--   **Admin Required**: Most features modify system settings and require elevated permissions.
+-   **Admin Required**: Most features modify system settings natively and require elevated permissions.
 -   **Input Sanitization**: Commands are sanitized to prevent injection or path traversal.
 -   **Safe Defaults**: Destructive actions require user confirmation.
 
